@@ -1,12 +1,12 @@
 import React from 'react';
+import { GameViews } from '../GameViews';
 
 const GameWindow: React.FC = () => {
-  return (
-    <div className="game-window-content">
-      {/* Тут буде відображатися сама гра */}
-      <h1>Game Window</h1>
-    </div>
-  );
+	return (
+		<div className="game-window-content">
+			<GameViews />
+		</div>
+	);
 };
 
 export default GameWindow;
