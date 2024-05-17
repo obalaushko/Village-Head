@@ -1,0 +1,65 @@
+// src/components/Dashboard/Dashboard.scss
+
+.dashboard {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.game-window {
+	flex: 6; // 70% of the vertical space
+	width: 100%;
+	background-color: #f0f0f0; // Change this to the desired background color
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.control-panel {
+	flex: 4; // 30% of the vertical space
+	width: 100%;
+	background-color: #e0e0e0; // Change this to the desired background color
+	box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		margin: 0 15px;
+	}
+
+	&__buttons {
+		display: flex;
+		gap: 10px;
+
+		button {
+			flex: 1;
+
+		}
+	}
+
+	.control-section {
+		flex: 1;
+		margin-bottom: 10px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		h2 {
+			margin: 0;
+			font-size: 1.2em;
+			margin-bottom: 5px;
+		}
+	}
+
+	.log {
+		overflow-y: auto;
+		max-height: 250px;
+		height: 250px;
+
+		p {
+			margin: 5px 0;
+		}
+	}
+}
