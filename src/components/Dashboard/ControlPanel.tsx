@@ -1,4 +1,4 @@
-import { Villager } from '@/models/Villager.ts';
+import { Villager } from '@/models/Characters/Villager.ts';
 import React, { useState } from 'react';
 
 const ControlPanel: React.FC = () => {
