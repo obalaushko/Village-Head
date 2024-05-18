@@ -1,14 +1,25 @@
-export class Villager {
-	private readonly MAX_HEALTH: number = 100;
-	private readonly MAX_HAPPINESS: number = 100;
-	private readonly id: string;
-	private fullName: string;
-	private age: number;
-	private sex: string;
-	private health: number = 0;
-	private happiness: number = 0;
-	private food: number = 0;
-	private money: number = 0;
+interface IPerson {
+	id: string;
+	fullName: string;
+	age: number;
+	sex: string;
+	health: number;
+	happinnes: number;
+	food: number;
+	money: number;
+}
+
+export class Person {
+	protected readonly MAX_HEALTH: number = 100;
+	protected readonly MAX_HAPPINESS: number = 100;
+	protected readonly id: string;
+	protected fullName: string;
+	protected age: number;
+	protected sex: string;
+	protected health: number = 0;
+	protected happiness: number = 0;
+	protected food: number = 0;
+	protected money: number = 0;
 
 	constructor(fullName: string, age: number, sex: string) {
 		this.id = Date.now().toString();
@@ -16,9 +27,8 @@ export class Villager {
 		this.age = age;
 		this.sex = sex;
 	}
-
 	// Getters
-	public get getVillagerInfo(): object {
+	public get getPersonInfo(): IPerson {
 		return {
 			id: this.id,
 			fullName: this.fullName,
@@ -30,86 +40,86 @@ export class Villager {
 			money: this.money,
 		};
 	}
-	public get getId(): string {
-		return this.id;
-	}
-	public get getFullName(): string {
-		return this.fullName;
-	}
-	public get getAge(): number {
-		return this.age;
-	}
-	public get getSex(): string {
-		return this.sex;
-	}
-	public get getHealth(): number {
-		return this.health;
-	}
-	public get getHappiness(): number {
-		return this.happiness;
-	}
-	public get getFood(): number {
-		return this.food;
-	}
-	public get getMoney(): number {
-		return this.money;
-	}
 
 	// Setters
-	private set setHealth(value: number) {
-		if (value > this.MAX_HEALTH) {
-			this.health = this.MAX_HEALTH;
-		} else {
-			this.health = value;
-		}
-	}
-	private set setHappiness(value: number) {
-		if (value > this.MAX_HAPPINESS) {
-			this.happiness = this.MAX_HAPPINESS;
-		} else {
-			this.happiness = value;
-		}
+	protected set setHealth(value: number) {
+		this.health = Math.min(value, this.MAX_HEALTH);
 	}
 
-	public updateFood(foodAmount: number) {
-		this.food += foodAmount;
-		this.calculateHappinessFromFood();
+	protected set setHappiness(value: number) {
+		this.happiness = Math.min(value, this.MAX_HAPPINESS);
 	}
 
-	private calculateHappinessFromFood() {
-		this.setHappiness += this.food * 5;
+	protected set setFood(value: number) {
+		this.food = value;
+	}
+
+	protected set setMoney(value: number) {
+		this.money = value;
 	}
 }
 
-// // Getters
-// public get getHealth(): number {
-// 	return this._health;
-// }
-// public get getHappiness(): number {
-// 	return this._happiness;
-// }
+export class Villager extends Person {
+	constructor(fullName: string, age: number, sex: string) {
+		super(fullName, age, sex);
 
-// // Setters
-// set setHealth(value: number) {
-// 	if (value > this.MAX_HEALTH) {
-// 		this._health = this.MAX_HEALTH;
-// 	} else {
-// 		this._health = value;
-// 	}
-// }
-// set setHappiness(value: number) {
-// 	if (value > this.MAX_HAPPINESS) {
-// 		this._happiness = this.MAX_HAPPINESS;
-// 	} else {
-// 		this._happiness = value;
-// 	}
-// }
+		this.setRandomValues();
+		this.calculateHappiness();
+	}
 
-// public updateFood(foodAmount: number) {
-// 	this.food += foodAmount;
-// 	this.calculateHappinessFromFood();
-// }
+	// Setters
+	protected set setHealth(value: number) {
+		super.setHealth = value;
 
-// private calculateHappinessFromFood() {
-// 	this.happiness += this.food * 5;
-// }
+		this.calculateHappiness();
+	}
+
+	protected set setFood(value: number) {
+		super.setFood = value;
+
+		this.calculateHappiness();
+	}
+
+	protected set setMoney(value: number) {
+		super.setMoney = value;
+
+		this.calculateHappiness();
+	}
+
+	public updateFood(foodAmount: number) {
+		this.setFood = this.food + foodAmount;
+	}
+
+	public updateMoney(moneyAmount: number) {
+		this.setMoney = this.money + moneyAmount;
+	}
+
+	private setRandomValues() {
+		this.health = this.getRandomInt(70, this.MAX_HEALTH);
+		this.money = this.getRandomInt(20, 100);
+		this.food = this.getRandomInt(30, 120);
+	}
+
+	private getRandomInt(min: number, max: number): number {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	private calculateHappiness() {
+		// Приклад вагових коефіцієнтів: 50% здоров'я, 30% грошей, 20% їжі
+		const healthWeight = 0.5;
+		const moneyWeight = 0.3;
+		const foodWeight = 0.2;
+
+		// Нормалізація значень
+		const normalizedHealth = (this.health / this.MAX_HEALTH) * 100;
+		const normalizedMoney = Math.min(this.money / 100, 1) * 100; // припускаємо, що 100 одиниць грошей це 100% щастя
+		const normalizedFood = Math.min(this.food / 100, 1) * 100; // припускаємо, що 100 одиниць їжі це 100% щастя
+
+		// Розрахунок щастя
+		const happiness =
+			normalizedHealth * healthWeight +
+			normalizedMoney * moneyWeight +
+			normalizedFood * foodWeight;
+		this.setHappiness = Math.floor(happiness);
+	}
+}

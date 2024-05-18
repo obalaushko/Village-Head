@@ -1,6 +1,4 @@
-import { Hero } from '@/models/Hero.ts';
 import { Villager } from '@/models/Villager.ts';
-import { addHero, getHeroes } from '@/services/heroService.ts';
 import React, { useState } from 'react';
 
 const ControlPanel: React.FC = () => {
@@ -8,8 +6,9 @@ const ControlPanel: React.FC = () => {
 
 	const handleButtonClick = (message: string) => {
 		const villager = new Villager('Stepan', 20, 'чоловік');
-		villager.updateFood(10);
-		console.log(villager);
+		// villager.updateFood(10);
+		// villager.updateMoney(100);
+		console.log(villager.getPersonInfo);
 		const info = new Date().toLocaleTimeString();
 		const InfoElement = (
 			<>
@@ -19,41 +18,6 @@ const ControlPanel: React.FC = () => {
 		setLog((prevLog) => [InfoElement, ...prevLog]);
 	};
 
-	const handleCreateVillageHead = async () => {
-		// Створення сільського голови
-		const heroExists = await getHeroes();
-		if (heroExists.length > 0) {
-			const info = new Date().toLocaleTimeString();
-			const InfoElement = (
-				<>
-					<span>Сільський голова вже створений</span> :{' '}
-					<span>{info}</span>
-				</>
-			);
-			setLog((prevLog) => [InfoElement, ...prevLog]);
-			return;
-		}
-		const newHero = {
-			name: 'Місций господарник',
-			health: 100,
-			energy: 100,
-		};
-		await addHero(
-			new Hero(
-				Date.now().toString(),
-				newHero.name,
-				newHero.health,
-				newHero.energy,
-			),
-		);
-		const info = new Date().toLocaleTimeString();
-		const InfoElement = (
-			<>
-				<span>Created Hero: {newHero.name}</span> : <span>{info}</span>
-			</>
-		);
-		setLog((prevLog) => [InfoElement, ...prevLog]);
-	};
 
 	const handleNewGame = () => {
 		console.log('New Game');
