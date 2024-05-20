@@ -1,14 +1,15 @@
 import { Villager } from '@/models/Characters/Villager.ts';
+import { Game } from '@/services/GameService.ts';
 import React, { useState } from 'react';
 
 const ControlPanel: React.FC = () => {
 	const [log, setLog] = useState<React.ReactNode[]>([]);
 
 	const handleButtonClick = (message: string) => {
-		const villager = new Villager('Stepan', 20, 'чоловік');
+		const villager = new Villager({fullName: 'John Doe', age: 30, sex: 'чоловік'})
 		// villager.updateFood(10);
 		// villager.updateMoney(100);
-		console.log(villager.getPersonInfo);
+		console.log(villager.getPersonInfo());
 		const info = new Date().toLocaleTimeString();
 		const InfoElement = (
 			<>
@@ -21,6 +22,10 @@ const ControlPanel: React.FC = () => {
 
 	const handleNewGame = () => {
 		console.log('New Game');
+		const newGame = new Game();
+		newGame.startNewGame(25);
+		console.log(newGame.getVillagersInfo());
+		console.log(newGame.getHousesInfo());
 	};
 
 	const handleClearLog = () => {

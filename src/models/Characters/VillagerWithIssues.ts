@@ -1,10 +1,11 @@
-import { Villager } from "./Villager.ts";
+import { createPersonType } from '@/types/Person.ts';
+import { Villager } from './Villager.ts';
 
 export class VillagerWithIssues extends Villager {
-	private problems: string[] = [];
 
-	constructor(fullName: string, age: number, sex: string) {
-		super(fullName, age, sex);
+	constructor(PersonData: createPersonType) {
+		super(PersonData);
+
 	}
 
 	public addProblem(problem: string) {
@@ -19,6 +20,7 @@ export class VillagerWithIssues extends Villager {
 		}
 		this.calculateHappiness();
 	}
+
 
 	protected calculateHappiness() {
 		super.calculateHappiness();
