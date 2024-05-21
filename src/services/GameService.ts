@@ -1,82 +1,86 @@
-import { House } from '@/models/Buildings/Building.ts';
-import { VillagerWithIssues } from '@/models/Characters/VillagerWithIssues.ts';
-import { createPersonType, sexType } from '@/types/Person.ts';
-import villagersData from '@/mock/villagers.json';
-
+import { Villager } from '@/models/Characters/Villager.ts';
+import { Settlement } from '@/models/Settlement/Settlement.ts';
 export class Game {
-	private villagers: VillagerWithIssues[] = [];
-	private houses: House[] = [];
+	private timerInterval: NodeJS.Timeout | null = null;
+	private timeElapsed: number = 0; // Час, який пройшов в грі (у годинах)
+	private readonly hoursInYear: number = 8760; // Кількість годин у одному році
+	private timeMultiplier: number = 5; // Множник швидкості часу (1: звичайна, 2: x2, 5: x5)
+	private isPaused: boolean = false; // Прапорець, що вказує, чи встановлено гру на паузу
+	private allVillagers: Villager[] = [];
+	private newVillage: Settlement;
+	private toogleTimes: boolean = true;
+	private lastAgeUpdateTime: number = 0; // Час, коли останній раз оновлювався вік персонажів
 
-	public startNewGame(numberOfHouses: number) {
-		this.createVillage(numberOfHouses);
+	constructor() {
+		// Ініціалізація гри
+		const village = new Settlement();
+		this.newVillage = village;
+		this.newVillage.createVillage(5);
+		this.allVillagers = this.newVillage.getVillagers();
 	}
 
-	private createVillage(numberOfHouses: number) {
-		this.createHouses(numberOfHouses);
-		this.createVillagers();
-		this.assignVillagersToHouses();
-	}
-
-	private createHouses(numberOfHouses: number) {
-		for (let i = 0; i < numberOfHouses; i++) {
-			const house = new House(
-				`house-${i + 1}`,
-				'residential', // Наприклад, всі будинки житлові
-				this.getRandomInt(1, 7), // Рандомна кількість місць у будинку
-			);
-			this.houses.push(house);
+	// Метод для запуску гри або продовження з паузи
+	public startGame() {
+		if (!this.timerInterval) {
+			this.timerInterval = setInterval(() => this.gameLoop(), 1000); // Таймер кожну секунду (або відповідно до вашого потреб)
 		}
 	}
 
-	private createVillagers() {
-		for (const house of this.houses) {
-			for (let i = 0; i < house.capacity; i++) {
-				const villager = new VillagerWithIssues(
-					this.generateRandomPersonData(),
-				);
-				this.villagers.push(villager);
+	// Основний цикл гри
+	private gameLoop() {
+		this.updateTime(); // Оновлюємо час у грі
+
+		// Перевіряємо, чи пройшов рік з моменту останнього оновлення віку
+		if (this.timeElapsed - this.lastAgeUpdateTime >= this.hoursInYear) {
+			this.updateVillagersAge();
+			this.lastAgeUpdateTime = this.timeElapsed; // Оновлюємо час останнього оновлення віку
+		}
+
+		if (!this.isPaused) {
+			// Якщо гра не на паузі
+			// Інші дії, які повинні відбуватися з плином часу
+			console.log(this.newVillage.getVillagersInfo());
+
+			if (this.toogleTimes) {
+				console.log({
+					timeElapsed: this.timeElapsed,
+					timeMultiplier: this.timeMultiplier,
+				});
 			}
 		}
 	}
 
-	private assignVillagersToHouses() {
-		let villagerIndex = 0;
-		for (const house of this.houses) {
-			while (
-				house.residents.length < house.capacity &&
-				villagerIndex < this.villagers.length
-			) {
-				const villager = this.villagers[villagerIndex];
-				house.addResident(villager);
-				villagerIndex++;
-			}
+	public toggleShowTimers() {
+		this.toogleTimes = !this.toogleTimes;
+	}
+
+	// Метод для призупинення гри
+	public pauseGame() {
+		if (this.timerInterval) {
+			clearInterval(this.timerInterval); // Призупиняємо таймер
+			this.timerInterval = null;
+			this.isPaused = true; // Встановлюємо гру на паузу
 		}
 	}
 
-	private validateSex(sex: string): sexType {
-		if (sex === 'чоловік' || sex === 'жінка') {
-			return sex;
+	// Метод для відновлення гри з паузи
+	public resumeGame() {
+		if (this.isPaused) {
+			this.startGame(); // Запускаємо або продовжуємо гру з паузи
+			this.isPaused = false; // Знімаємо гру з паузи
 		}
-		throw new Error(`Invalid sex type: ${sex}`);
 	}
 
-	private generateRandomPersonData(): createPersonType {
-		const randomIndex = this.getRandomInt(0, villagersData.length - 1);
-		const villager = villagersData[randomIndex];
-		const age = this.getRandomInt(18, 60);
-		const sex = this.validateSex(villager.sex);
-		return { fullName: villager.fullName, age, sex };
+	// Метод для оновлення часу у грі
+	private updateTime() {
+		// Оновлюємо час з урахуванням множника швидкості часу
+		this.timeElapsed += 1 * this.timeMultiplier; // Наприклад, кожну секунду у грі дорівнює 1 годині
 	}
 
-	private getRandomInt(min: number, max: number): number {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
-	}
-
-	public getVillagersInfo() {
-		return this.villagers.map((villager) => villager.getPersonInfo());
-	}
-
-	public getHousesInfo() {
-		return this.houses.map((house) => house.getHouseInfo());
+	// Метод для оновлення віку всіх сільських жителів
+	private updateVillagersAge() {
+		for (const villager of this.allVillagers) {
+			villager.incrementAge(); // Викликаємо метод для збільшення віку у сільського жителя
+		}
 	}
 }

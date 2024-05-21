@@ -6,6 +6,12 @@ export type createPersonType = {
 	sex: sexType;
 }
 
+export type jobType = {
+	name: string;
+	salary: number;
+	location: string;
+}
+
 export interface IPerson {
 	id: string;
 	fullName: string;
@@ -15,5 +21,8 @@ export interface IPerson {
 	happiness: number;
 	food: number;
 	money: number;
-	problems?: string[];
+	request: string[];
+	job: jobType;
+	clothes: number;
+	entertainment: boolean;
 }

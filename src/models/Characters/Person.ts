@@ -1,4 +1,4 @@
-import { IPerson, createPersonType, sexType } from "@/types/Person.ts";
+import { IPerson, createPersonType, jobType, sexType } from '@/types/Person.ts';
 
 /**
  * Represents a person in the village.
@@ -20,7 +20,14 @@ export class Person {
 	protected happiness: number = 0;
 	protected food: number = 0;
 	protected money: number = 0;
-	protected problems: string[] = [];
+	protected request: string[] = [];
+	protected job: jobType = {
+		name: '',
+		salary: 0,
+		location: '',
+	};
+	protected clothes: number = 0;
+	protected entertainment: boolean = false;
 
 	/**
 	 * Creates a new instance of the Person class.
@@ -34,7 +41,6 @@ export class Person {
 		this.age = age;
 		this.sex = sex;
 	}
-
 
 	/**
 	 * Returns the information of the person.
@@ -50,6 +56,10 @@ export class Person {
 			happiness: this.happiness,
 			food: this.food,
 			money: this.money,
+			clothes: this.clothes,
+			job: this.job,
+			request: this.request,
+			entertainment: this.entertainment,
 		};
 	}
 
@@ -67,5 +77,16 @@ export class Person {
 
 	protected setMoney(value: number) {
 		this.money = value;
+	}
+
+	protected setClothes(value: number) {
+		this.clothes = value;
+	}
+
+	protected setEntertainment(value: boolean) {
+		this.entertainment = value;
+	}
+	protected setAge(value: number) {
+		this.age = value;
 	}
 }

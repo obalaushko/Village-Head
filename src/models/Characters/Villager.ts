@@ -64,6 +64,13 @@ export class Villager extends Person {
 	}
 
 	/**
+	 * Updates the age of the villager by incrementing it by 1.
+	 */
+	public incrementAge() {
+		this.setAge(this.age + 1);
+	}
+
+	/**
 	 * Sets random values for health, money, and food.
 	 */
 	private setRandomValues() {
