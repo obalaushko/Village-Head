@@ -2,7 +2,7 @@ import { Villager } from '@/models/Characters/Villager.ts';
 import { Settlement } from '@/models/Settlement/Settlement.ts';
 import { GameSpeed } from '@/types/Game.ts';
 import { getRandomInt } from '@/utils/utils.ts';
-import { setInterval as workerSetInterval } from 'worker-timers';
+import { setInterval as workerSetInterval, clearInterval as workerClearInterval } from 'worker-timers';
 export class Game {
 	private timerInterval: number | null = null; // worker-timers return numbers
 	private timeElapsed: number = 0; // Час, який пройшов в грі (у годинах)
@@ -75,7 +75,7 @@ export class Game {
 	// Метод для призупинення гри
 	public pauseGame() {
 		if (this.timerInterval) {
-			clearInterval(this.timerInterval); // Призупиняємо таймер
+			workerClearInterval(this.timerInterval); // Призупиняємо таймер
 			this.timerInterval = null;
 			this.isPaused = true; // Встановлюємо гру на паузу
 		}
