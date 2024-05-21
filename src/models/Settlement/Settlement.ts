@@ -1,7 +1,8 @@
-import { createPersonType, sexType } from "@/types/Person.ts";
-import { Villager } from "../Characters/Villager.ts";
-import { House } from "../Buildings/Building.ts";
+import { createPersonType, sexType } from '@/types/Person.ts';
+import { Villager } from '../Characters/Villager.ts';
+import { House } from '../Buildings/Building.ts';
 import villagersData from '@/mock/villagers.json';
+import { getRandomInt } from '@/utils/utils.ts';
 
 /**
  * Represents a settlement with houses and villagers.
@@ -29,7 +30,7 @@ export class Settlement {
 			const house = new House(
 				`house-${i + 1}`,
 				'residential', // For example, all houses are residential
-				this.getRandomInt(2, 5), // Random number of seats in the house
+				getRandomInt(2, 5), // Random number of seats in the house
 			);
 			this.houses.push(house);
 		}
@@ -41,9 +42,7 @@ export class Settlement {
 	private createVillagers() {
 		for (const house of this.houses) {
 			for (let i = 0; i < house.capacity; i++) {
-				const villager = new Villager(
-					this.generateRandomPersonData(),
-				);
+				const villager = new Villager(this.generateRandomPersonData());
 				this.villagers.push(villager);
 			}
 		}
@@ -84,21 +83,11 @@ export class Settlement {
 	 * @returns The generated person data.
 	 */
 	private generateRandomPersonData(): createPersonType {
-		const randomIndex = this.getRandomInt(0, villagersData.length - 1);
+		const randomIndex = getRandomInt(0, villagersData.length - 1);
 		const villager = villagersData[randomIndex];
-		const age = this.getRandomInt(18, 60);
+		const age = getRandomInt(18, 60);
 		const sex = this.validateSex(villager.sex);
 		return { fullName: villager.fullName, age, sex };
-	}
-
-	/**
-	 * Generates a random integer between the specified minimum and maximum values.
-	 * @param min - The minimum value.
-	 * @param max - The maximum value.
-	 * @returns The random integer.
-	 */
-	private getRandomInt(min: number, max: number): number {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 
 	/**

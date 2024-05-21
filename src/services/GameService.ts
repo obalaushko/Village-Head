@@ -1,28 +1,32 @@
 import { Villager } from '@/models/Characters/Villager.ts';
 import { Settlement } from '@/models/Settlement/Settlement.ts';
+import { GameSpeed } from '@/types/Game.ts';
+import { getRandomInt } from '@/utils/utils.ts';
+import { setInterval as workerSetInterval } from 'worker-timers';
 export class Game {
-	private timerInterval: NodeJS.Timeout | null = null;
+	private timerInterval: number | null = null; // worker-timers return numbers
 	private timeElapsed: number = 0; // Час, який пройшов в грі (у годинах)
 	private readonly hoursInYear: number = 8760; // Кількість годин у одному році
-	private timeMultiplier: number = 5; // Множник швидкості часу (1: звичайна, 2: x2, 5: x5)
+	private timeMultiplier: GameSpeed = 1; // Множник швидкості часу (1: звичайна, 2: x2, 5: x5)
 	private isPaused: boolean = false; // Прапорець, що вказує, чи встановлено гру на паузу
 	private allVillagers: Villager[] = [];
 	private newVillage: Settlement;
 	private toogleTimes: boolean = true;
 	private lastAgeUpdateTime: number = 0; // Час, коли останній раз оновлювався вік персонажів
 
-	constructor() {
+	constructor(timeMultiplier: GameSpeed = 1) {
 		// Ініціалізація гри
 		const village = new Settlement();
 		this.newVillage = village;
-		this.newVillage.createVillage(5);
+		this.newVillage.createVillage(getRandomInt(5, 10));
 		this.allVillagers = this.newVillage.getVillagers();
+		this.timeMultiplier = timeMultiplier;
 	}
 
 	// Метод для запуску гри або продовження з паузи
 	public startGame() {
 		if (!this.timerInterval) {
-			this.timerInterval = setInterval(() => this.gameLoop(), 1000); // Таймер кожну секунду (або відповідно до вашого потреб)
+			this.timerInterval = workerSetInterval(() => this.gameLoop(), 1000);
 		}
 	}
 
@@ -39,7 +43,7 @@ export class Game {
 		if (!this.isPaused) {
 			// Якщо гра не на паузі
 			// Інші дії, які повинні відбуватися з плином часу
-			console.log(this.newVillage.getVillagersInfo());
+			console.log(this.newVillage.getHousesInfo());
 
 			if (this.toogleTimes) {
 				console.log({
@@ -48,6 +52,20 @@ export class Game {
 				});
 			}
 		}
+	}
+
+	// Метод для оновлення часу у грі
+	private updateTime() {
+		// Оновлюємо час з урахуванням множника швидкості часу
+		this.timeElapsed += 1 * this.timeMultiplier; // Наприклад, кожну секунду у грі дорівнює 1 годині
+	}
+
+	/**
+	 * Updates the time multiplier for the game.
+	 * @param multiplier - The new game speed multiplier.
+	 */
+	public updateMultiplier(multiplier: GameSpeed) {
+		this.timeMultiplier = multiplier;
 	}
 
 	public toggleShowTimers() {
@@ -69,12 +87,6 @@ export class Game {
 			this.startGame(); // Запускаємо або продовжуємо гру з паузи
 			this.isPaused = false; // Знімаємо гру з паузи
 		}
-	}
-
-	// Метод для оновлення часу у грі
-	private updateTime() {
-		// Оновлюємо час з урахуванням множника швидкості часу
-		this.timeElapsed += 1 * this.timeMultiplier; // Наприклад, кожну секунду у грі дорівнює 1 годині
 	}
 
 	// Метод для оновлення віку всіх сільських жителів
