@@ -1,15 +1,16 @@
-import { createPersonType, sexType } from '@/types/Person.ts';
+import { IPerson, createPersonType, sexType } from '@/types/Person.type.ts';
 import { Villager } from '../Characters/Villager.ts';
-import { House } from '../Buildings/Building.ts';
 import villagersData from '@/mock/villagers.json';
 import { getRandomInt } from '@/utils/utils.ts';
+import { Residential } from '../Buildings/Building.ts';
+import { IBuilding } from '@/types/Game.type.ts';
 
 /**
  * Represents a settlement with houses and villagers.
  */
 export class Settlement {
 	private villagers: Villager[] = [];
-	private houses: House[] = [];
+	private buildings: Residential[] = [];
 
 	/**
 	 * Creates a village by creating houses, villagers, and assigning villagers to houses.
@@ -27,12 +28,11 @@ export class Settlement {
 	 */
 	private createHouses(numberOfHouses: number) {
 		for (let i = 0; i < numberOfHouses; i++) {
-			const house = new House(
+			const house = new Residential(
 				`house-${i + 1}`,
-				'residential', // For example, all houses are residential
 				getRandomInt(2, 5), // Random number of seats in the house
 			);
-			this.houses.push(house);
+			this.buildings.push(house);
 		}
 	}
 
@@ -40,7 +40,7 @@ export class Settlement {
 	 * Creates villagers and adds them to the settlement.
 	 */
 	private createVillagers() {
-		for (const house of this.houses) {
+		for (const house of this.buildings) {
 			for (let i = 0; i < house.capacity; i++) {
 				const villager = new Villager(this.generateRandomPersonData());
 				this.villagers.push(villager);
@@ -53,12 +53,13 @@ export class Settlement {
 	 */
 	private assignVillagersToHouses() {
 		let villagerIndex = 0;
-		for (const house of this.houses) {
+		for (const house of this.buildings) {
 			while (
 				house.residents.length < house.capacity &&
 				villagerIndex < this.villagers.length
 			) {
 				const villager = this.villagers[villagerIndex];
+
 				house.addResident(villager);
 				villagerIndex++;
 			}
@@ -94,7 +95,7 @@ export class Settlement {
 	 * Gets information about the villagers in the settlement.
 	 * @returns An array of villagers' information.
 	 */
-	public getVillagersInfo() {
+	public getVillagersInfo(): IPerson[] {
 		return this.villagers.map((villager) => villager.getPersonInfo());
 	}
 
@@ -110,7 +111,7 @@ export class Settlement {
 	 * Gets information about the houses in the settlement.
 	 * @returns An array of houses' information.
 	 */
-	public getHousesInfo() {
-		return this.houses.map((house) => house.getHouseInfo());
+	public getBuildingInfo(): IBuilding[]{
+		return this.buildings
 	}
 }

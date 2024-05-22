@@ -1,4 +1,4 @@
-import { createPersonType } from '@/types/Person.ts';
+import { createPersonType } from '@/types/Person.type.ts';
 import { Person } from './Person.ts';
 /**
  * Represents a villager character.
@@ -66,8 +66,8 @@ export class Villager extends Person {
 	/**
 	 * Updates the age of the villager by incrementing it by 1.
 	 */
-	public incrementAge(yearsElapsed: number) {
-		this.setAge(this.age += yearsElapsed);
+	public incrementAge() {
+		this.setAge(this.age + 1);
 	}
 
 	/**

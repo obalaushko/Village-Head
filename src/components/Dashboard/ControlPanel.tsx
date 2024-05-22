@@ -8,7 +8,7 @@ import {
 	Typography,
 } from '@mui/material';
 import React, { useState } from 'react';
-import { GameSpeed } from '@/types/Game.ts';
+import { GameSpeed } from '@/types/Game.type';
 
 // Icons
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';

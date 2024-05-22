@@ -1,34 +1,27 @@
-import { VillagerWithIssues } from "../Characters/VillagerWithIssues.ts";
+import { Coordinates, HouseType, IBuilding } from '@/types/Game.type.ts';
+import { Villager } from '../Characters/Villager.ts';
 
-
-export interface IHouse {
-	id: string;
-	type: HouseType;
-	capacity: number;
-	residents: VillagerWithIssues[];
-}
-
-export type HouseType = 'residential' | 'commercial' | 'industrial';
-
-export class House implements IHouse {
+export class Building implements IBuilding {
 	public readonly id: string;
 	public readonly type: HouseType;
 	public readonly capacity: number;
-	public residents: VillagerWithIssues[];
+	public residents: Villager[];
+	public coordinates: Coordinates = { x: 0, y: 0 };
 
 	constructor(id: string, type: HouseType, capacity: number) {
 		this.id = id;
 		this.type = type;
 		this.capacity = capacity;
 		this.residents = [];
+
+		this.generateRandomCoordinates();
 	}
 
-	public addResident(villager: VillagerWithIssues): boolean {
-		if (this.residents.length < this.capacity) {
-			this.residents.push(villager);
-			return true;
-		}
-		return false;
+	protected generateRandomCoordinates() {
+		this.coordinates = {
+			x: Math.floor(Math.random() * 100),
+			y: Math.floor(Math.random() * 100),
+		};
 	}
 
 	public getHouseInfo() {
@@ -36,7 +29,24 @@ export class House implements IHouse {
 			id: this.id,
 			type: this.type,
 			capacity: this.capacity,
-			residents: this.residents.map(resident => resident.getPersonInfo()),
+			residents: this.residents.map((resident) =>
+				resident.getPersonInfo(),
+			),
+			coordinates: this.coordinates,
 		};
+	}
+}
+
+export class Residential extends Building {
+	constructor(id: string, capacity: number) {
+		super(id, 'residential', capacity);
+	}
+
+	public addResident(villager: Villager): boolean {
+		if (this.residents.length < this.capacity) {
+			this.residents.push(villager);
+			return true;
+		}
+		return false;
 	}
 }

@@ -1,4 +1,5 @@
-import { IPerson, createPersonType, jobType, sexType } from '@/types/Person.ts';
+import { IPerson, createPersonType, jobType, sexType } from '@/types/Person.type.ts';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Represents a person in the village.
@@ -36,7 +37,7 @@ export class Person {
 	 * @param sex - The sex of the person.
 	 */
 	constructor({ fullName, age, sex }: createPersonType) {
-		this.id = Date.now().toString();
+		this.id = uuidv4();
 		this.fullName = fullName;
 		this.age = age;
 		this.sex = sex;

@@ -1,6 +1,6 @@
 import { Villager } from '@/models/Characters/Villager.ts';
 import { Settlement } from '@/models/Settlement/Settlement.ts';
-import { GameSpeed } from '@/types/Game.ts';
+import { GameSpeed } from '@/types/Game.type';
 import { getRandomInt } from '@/utils/utils.ts';
 import { workerClearInterval, workerSetInterval } from '@/utils/workerTimer.ts';
 
@@ -22,9 +22,14 @@ export class Game {
 		// Ініціалізація гри
 		const village = new Settlement();
 		this.newVillage = village;
-		this.newVillage.createVillage(getRandomInt(5, 10));
+		this.newVillage.createVillage(getRandomInt(2, 5));
 		this.allVillagers = this.newVillage.getVillagers();
 		this.timeMultiplier = timeMultiplier;
+
+		store.updateSettlement({
+			villagers: this.newVillage.getVillagersInfo(),
+			buildings: this.newVillage.getBuildingInfo(),
+		});
 	}
 
 	// Метод для запуску гри або продовження з паузи
@@ -42,13 +47,18 @@ export class Game {
 		if (
 			yearsElapsed > Math.floor(this.lastAgeUpdateTime / this.hoursInYear)
 		) {
-			this.updateVillagersAge(yearsElapsed);
+			this.updateVillagersAge();
 			this.lastAgeUpdateTime = this.timeElapsed;
+
 		}
 
 		if (!this.isPaused) {
 			// Інші дії, які повинні відбуватися з плином часу
 			this.getCurrentGameDate();
+			store.updateSettlement({
+				villagers: this.newVillage.getVillagersInfo(),
+				buildings: this.newVillage.getBuildingInfo()
+			});
 		}
 	}
 
@@ -78,9 +88,9 @@ export class Game {
 	}
 
 	// Метод для оновлення віку всіх сільських жителів
-	private updateVillagersAge(yearsElapsed: number) {
+	private updateVillagersAge() {
 		for (const villager of this.allVillagers) {
-			villager.incrementAge(yearsElapsed); // Викликаємо метод для збільшення віку у сільського жителя
+			villager.incrementAge(); // Викликаємо метод для збільшення віку у сільського жителя
 		}
 	}
 

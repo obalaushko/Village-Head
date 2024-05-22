@@ -1,10 +1,6 @@
+import { IGameTime, ISettlement } from '@/types/Game.type';
 import { makeAutoObservable, autorun } from 'mobx';
 
-interface IGameTime {
-	year: number;
-	month: number;
-	day: number;
-}
 class Store {
 	curreentGameTime: IGameTime = {
 		day: 0,
@@ -12,6 +8,10 @@ class Store {
 		year: 0,
 	};
 	showLogs: boolean = true;
+	settlement: ISettlement = {
+		villagers: [],
+		buildings: [],
+	};
 
 	constructor() {
 		makeAutoObservable(this);
@@ -23,6 +23,11 @@ class Store {
 
 	toggleLogs = () => {
 		this.showLogs = !this.showLogs;
+	};
+
+	updateSettlement = ({ villagers, buildings }: ISettlement) => {
+		this.settlement.villagers = villagers;
+		this.settlement.buildings = buildings;
 	};
 }
 

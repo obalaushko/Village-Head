@@ -21,6 +21,7 @@
 		"mobx-react-lite": "^4.0.7",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"uuid": "^9.0.1",
 		"worker-timers": "^7.1.8"
 	},
 	"devDependencies": {
@@ -28,6 +29,7 @@
 		"@types/node": "^20.12.12",
 		"@types/react": "^18.2.66",
 		"@types/react-dom": "^18.2.22",
+		"@types/uuid": "^9.0.8",
 		"@typescript-eslint/eslint-plugin": "^7.2.0",
 		"@typescript-eslint/parser": "^7.2.0",
 		"@vitejs/plugin-react": "^4.2.1",
