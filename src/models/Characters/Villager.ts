@@ -66,8 +66,8 @@ export class Villager extends Person {
 	/**
 	 * Updates the age of the villager by incrementing it by 1.
 	 */
-	public incrementAge() {
-		this.setAge(this.age + 1);
+	public incrementAge(yearsElapsed: number) {
+		this.setAge(this.age += yearsElapsed);
 	}
 
 	/**

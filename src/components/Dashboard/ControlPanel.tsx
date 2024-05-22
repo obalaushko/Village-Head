@@ -46,10 +46,6 @@ const ControlPanel: React.FC = () => {
 		paused ? handleResumeGame() : handlePauseGame();
 	};
 
-	const handleToggleTimers = () => {
-		game?.toggleShowTimers();
-	};
-
 	const handlePauseGame = () => {
 		console.log('Pause Game');
 		game?.pauseGame();
@@ -95,9 +91,6 @@ const ControlPanel: React.FC = () => {
 					}
 				>
 					{paused ? 'Відновити' : 'Зупинити'}
-				</Button>
-				<Button variant="outlined" onClick={() => handleToggleTimers()}>
-					Таймери
 				</Button>
 				<ToggleButtonGroup
 					value={timeMultiplier}

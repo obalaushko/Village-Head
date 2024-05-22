@@ -1,11 +1,12 @@
 import React from 'react';
 import { GameViews } from '../GameViews';
+import { Box } from '@mui/system';
 
 const GameWindow: React.FC = () => {
 	return (
-		<div className="game-window-content">
+		<Box className="game-window-content" sx={{ height: '100%' }}>
 			<GameViews />
-		</div>
+		</Box>
 	);
 };
 

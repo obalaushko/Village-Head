@@ -2,16 +2,20 @@ import { Villager } from '@/models/Characters/Villager.ts';
 import { Settlement } from '@/models/Settlement/Settlement.ts';
 import { GameSpeed } from '@/types/Game.ts';
 import { getRandomInt } from '@/utils/utils.ts';
-import { setInterval as workerSetInterval, clearInterval as workerClearInterval } from 'worker-timers';
+import { workerClearInterval, workerSetInterval } from '@/utils/workerTimer.ts';
+
+import store from '@/state/Store.ts';
 export class Game {
 	private timerInterval: number | null = null; // worker-timers return numbers
 	private timeElapsed: number = 0; // Час, який пройшов в грі (у годинах)
 	private readonly hoursInYear: number = 8760; // Кількість годин у одному році
+	private readonly hoursInDay: number = 24; // Кількість годин у дні
+	private readonly monthsInYear: number = 12; // Кількість місяців у році
+	private readonly daysInYear: number = 365; // Кількість днів у році (не враховуючи високосний рік)
 	private timeMultiplier: GameSpeed = 1; // Множник швидкості часу (1: звичайна, 2: x2, 5: x5)
-	private isPaused: boolean = false; // Прапорець, що вказує, чи встановлено гру на паузу
+	private isPaused: boolean = false;
 	private allVillagers: Villager[] = [];
 	private newVillage: Settlement;
-	private toogleTimes: boolean = true;
 	private lastAgeUpdateTime: number = 0; // Час, коли останній раз оновлювався вік персонажів
 
 	constructor(timeMultiplier: GameSpeed = 1) {
@@ -32,32 +36,20 @@ export class Game {
 
 	// Основний цикл гри
 	private gameLoop() {
-		this.updateTime(); // Оновлюємо час у грі
+		this.timeElapsed += 1 * this.timeMultiplier; // Оновлюємо час у грі
 
-		// Перевіряємо, чи пройшов рік з моменту останнього оновлення віку
-		if (this.timeElapsed - this.lastAgeUpdateTime >= this.hoursInYear) {
-			this.updateVillagersAge();
-			this.lastAgeUpdateTime = this.timeElapsed; // Оновлюємо час останнього оновлення віку
+		const yearsElapsed = Math.floor(this.timeElapsed / this.hoursInYear);
+		if (
+			yearsElapsed > Math.floor(this.lastAgeUpdateTime / this.hoursInYear)
+		) {
+			this.updateVillagersAge(yearsElapsed);
+			this.lastAgeUpdateTime = this.timeElapsed;
 		}
 
 		if (!this.isPaused) {
-			// Якщо гра не на паузі
 			// Інші дії, які повинні відбуватися з плином часу
-			console.log(this.newVillage.getHousesInfo());
-
-			if (this.toogleTimes) {
-				console.log({
-					timeElapsed: this.timeElapsed,
-					timeMultiplier: this.timeMultiplier,
-				});
-			}
+			this.getCurrentGameDate();
 		}
-	}
-
-	// Метод для оновлення часу у грі
-	private updateTime() {
-		// Оновлюємо час з урахуванням множника швидкості часу
-		this.timeElapsed += 1 * this.timeMultiplier; // Наприклад, кожну секунду у грі дорівнює 1 годині
 	}
 
 	/**
@@ -66,10 +58,6 @@ export class Game {
 	 */
 	public updateMultiplier(multiplier: GameSpeed) {
 		this.timeMultiplier = multiplier;
-	}
-
-	public toggleShowTimers() {
-		this.toogleTimes = !this.toogleTimes;
 	}
 
 	// Метод для призупинення гри
@@ -90,9 +78,34 @@ export class Game {
 	}
 
 	// Метод для оновлення віку всіх сільських жителів
-	private updateVillagersAge() {
+	private updateVillagersAge(yearsElapsed: number) {
 		for (const villager of this.allVillagers) {
-			villager.incrementAge(); // Викликаємо метод для збільшення віку у сільського жителя
+			villager.incrementAge(yearsElapsed); // Викликаємо метод для збільшення віку у сільського жителя
 		}
+	}
+
+	// Метод для отримання поточного ігрового року, місяця і дня
+	private getCurrentGameDate() {
+		const totalDaysElapsed = Math.floor(this.timeElapsed / this.hoursInDay);
+		const currentYear = Math.floor(totalDaysElapsed / this.daysInYear);
+		const remainingDays = totalDaysElapsed % this.daysInYear;
+
+		const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+		let currentMonth = 0;
+		let currentDay = remainingDays;
+
+		for (let i = 0; i < this.monthsInYear; i++) {
+			if (currentDay < daysInMonth[i]) {
+				currentMonth = i + 1;
+				break;
+			}
+			currentDay -= daysInMonth[i];
+		}
+
+		store.updateGameTime({
+			year: currentYear,
+			month: currentMonth,
+			day: currentDay + 1,
+		});
 	}
 }
