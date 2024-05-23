@@ -8,7 +8,7 @@ import store from '@/state/Store.ts';
 export class Game {
 	private timerInterval: number | null = null; // worker-timers return numbers
 	private timeElapsed: number = 0; // Час, який пройшов в грі (у годинах)
-	private readonly hoursInYear: number = 8760; // Кількість годин у одному році
+	private readonly hoursInYear: number = 87600; // Кількість годин у одному році
 	private readonly hoursInDay: number = 24; // Кількість годин у дні
 	private readonly monthsInYear: number = 12; // Кількість місяців у році
 	private readonly daysInYear: number = 365; // Кількість днів у році (не враховуючи високосний рік)
@@ -35,13 +35,13 @@ export class Game {
 	// Метод для запуску гри або продовження з паузи
 	public startGame() {
 		if (!this.timerInterval) {
-			this.timerInterval = workerSetInterval(() => this.gameLoop(), 1000);
+			this.timerInterval = workerSetInterval(() => this.gameLoop(), 100);
 		}
 	}
 
 	// Основний цикл гри
 	private gameLoop() {
-		this.timeElapsed += 1 * this.timeMultiplier; // Оновлюємо час у грі
+		this.timeElapsed += 0.1 * this.timeMultiplier; // Оновлюємо час у грі (0.1 if 100ms interval)
 
 		const yearsElapsed = Math.floor(this.timeElapsed / this.hoursInYear);
 		if (

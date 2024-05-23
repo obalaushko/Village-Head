@@ -3,7 +3,7 @@ import { Villager } from '../Characters/Villager.ts';
 import villagersData from '@/mock/villagers.json';
 import { getRandomInt } from '@/utils/utils.ts';
 import { Residential } from '../Buildings/Building.ts';
-import { IBuilding } from '@/types/Game.type.ts';
+import { IBuilding } from '@/types/Building.type.ts';
 
 /**
  * Represents a settlement with houses and villagers.
@@ -28,10 +28,10 @@ export class Settlement {
 	 */
 	private createHouses(numberOfHouses: number) {
 		for (let i = 0; i < numberOfHouses; i++) {
-			const house = new Residential(
-				`house-${i + 1}`,
-				getRandomInt(2, 5), // Random number of seats in the house
-			);
+			const house = new Residential({
+				id: `house-${i + 1}`,
+				capacity: getRandomInt(2, 5),
+			});
 			this.buildings.push(house);
 		}
 	}
@@ -111,7 +111,7 @@ export class Settlement {
 	 * Gets information about the houses in the settlement.
 	 * @returns An array of houses' information.
 	 */
-	public getBuildingInfo(): IBuilding[]{
-		return this.buildings
+	public getBuildingInfo(): IBuilding[] {
+		return this.buildings;
 	}
 }

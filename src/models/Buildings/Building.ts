@@ -1,4 +1,9 @@
-import { Coordinates, HouseType, IBuilding } from '@/types/Game.type.ts';
+import {
+	Coordinates,
+	HouseType,
+	IBuilding,
+	createBuildingType,
+} from '@/types/Building.type.ts';
 import { Villager } from '../Characters/Villager.ts';
 
 export class Building implements IBuilding {
@@ -8,7 +13,7 @@ export class Building implements IBuilding {
 	public residents: Villager[];
 	public coordinates: Coordinates = { x: 0, y: 0 };
 
-	constructor(id: string, type: HouseType, capacity: number) {
+	constructor({ id, type, capacity }: createBuildingType) {
 		this.id = id;
 		this.type = type;
 		this.capacity = capacity;
@@ -38,8 +43,16 @@ export class Building implements IBuilding {
 }
 
 export class Residential extends Building {
-	constructor(id: string, capacity: number) {
-		super(id, 'residential', capacity);
+	constructor({
+		id,
+		capacity,
+		type = 'residential',
+	}: {
+		id: string;
+		capacity: number;
+		type?: HouseType;
+	}) {
+		super({ id, capacity, type });
 	}
 
 	public addResident(villager: Villager): boolean {
