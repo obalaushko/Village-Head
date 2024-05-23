@@ -97,6 +97,9 @@ export class Game {
 			workerClearInterval(this.timerInterval);
 			this.timerInterval = null;
 			this.isPaused = true;
+
+			gameStore.isPaused = true;
+			console.log('pauseGame');
 		}
 	}
 
@@ -107,6 +110,9 @@ export class Game {
 		if (this.isPaused) {
 			this.startGame();
 			this.isPaused = false;
+
+			gameStore.isPaused = false;
+			console.log('resumeGame');
 		}
 	}
 

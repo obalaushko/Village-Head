@@ -8,7 +8,6 @@ import {
 import { GameSpeed } from '@/types/Game.type';
 
 // Icons
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import AssistWalkerRoundedIcon from '@mui/icons-material/AssistWalkerRounded';
 import DirectionsWalkRoundedIcon from '@mui/icons-material/DirectionsWalkRounded';
@@ -21,8 +20,6 @@ const ControlPanel: React.FC = observer(() => {
 		isInitialized,
 		timeMultiplier,
 		updateGameSpeed,
-		isPaused,
-		togglePauseGame,
 		initGame,
 		endGame,
 	} = gameStore;
@@ -49,22 +46,6 @@ const ControlPanel: React.FC = observer(() => {
 				>
 					Нова гра
 				</Button>
-
-				<Button
-					variant="outlined"
-					color={isPaused ? 'success' : 'warning'}
-					disabled={!isInitialized}
-					onClick={() => togglePauseGame()}
-					startIcon={
-						isPaused ? (
-							<PlayArrowRoundedIcon />
-						) : (
-							<PauseRoundedIcon />
-						)
-					}
-				>
-					{isPaused ? 'Відновити' : 'Зупинити'}
-				</Button>
 				<Button
 					variant="outlined"
 					color="error"
@@ -75,10 +56,13 @@ const ControlPanel: React.FC = observer(() => {
 				</Button>
 				<ToggleButtonGroup
 					value={timeMultiplier}
-					disabled={isPaused || !isInitialized}
+					disabled={!isInitialized}
 					exclusive
 					onChange={handleChangeTimeMultiplier}
 				>
+					<ToggleButton value={0} aria-label="pause">
+						<PauseRoundedIcon />
+					</ToggleButton>
 					<ToggleButton value={1} aria-label="1x">
 						<AssistWalkerRoundedIcon />
 					</ToggleButton>

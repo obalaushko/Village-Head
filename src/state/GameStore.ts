@@ -66,13 +66,11 @@ class GameStore {
 	updateGameSpeed = (speed: GameSpeed) => {
 		this.timeMultiplier = speed;
 		this.gameLink?.updateMultiplier(speed);
-	};
-
-	togglePauseGame = () => {
-		this.isPaused
-			? this.gameLink?.resumeGame()
-			: this.gameLink?.pauseGame();
-		this.isPaused = !this.isPaused;
+		if (speed === 0) {
+			this.gameLink?.pauseGame()
+		} else {
+			this.gameLink?.resumeGame()
+		}
 	};
 
 	endGame = () => {
