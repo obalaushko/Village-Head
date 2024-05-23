@@ -6,6 +6,7 @@ const SideBar: React.FC = observer(() => {
 	const {
 		curreentGameTime: { year, month, day },
 	} = gameStore;
+
 	return (
 		<Box className="game-views__sidebar sidebar" sx={{ flex: 2 }}>
 			<Box className="sidebar__timer">

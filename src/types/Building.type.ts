@@ -18,3 +18,10 @@ export interface IBuilding {
 	size: SizeBuilding;
 }
 export type HouseType = 'residential' | 'commercial' | 'industrial';
+
+export interface Block {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}

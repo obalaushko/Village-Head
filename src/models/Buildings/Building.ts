@@ -5,6 +5,7 @@ import {
 	createBuildingType,
 } from '@/types/Building.type.ts';
 import { Villager } from '../Characters/Villager.ts';
+import { getRandomInt } from '@/utils/utils.ts';
 
 export class Building implements IBuilding {
 	public readonly id: string;
@@ -24,8 +25,8 @@ export class Building implements IBuilding {
 
 	protected generateRandomSize() {
 		this.size = {
-			width: Math.floor(Math.random() * 100),
-			height: Math.floor(Math.random() * 100),
+			width: getRandomInt(50, 100),
+			height: getRandomInt(50, 100),
 		};
 	}
 

@@ -18,13 +18,12 @@ export class Game {
 	private timeMultiplier: GameSpeed = 1; // The time speed multiplier (1: normal, 2: x2, 5: x5)
 	private isPaused: boolean = false; // Indicates whether the game is paused or not
 	private allVillagers: Villager[] = []; // An array of all the villagers in the village
-	private newVillage: Settlement; // The instance of the Settlement class representing the village
+	private newVillage: Settlement | null; // The instance of the Settlement class representing the village
 	private lastAgeUpdateTime: number = 0; // The time when the age of villagers was last updated
 
 	constructor(timeMultiplier: GameSpeed = 1) {
-		const village = new Settlement();
-		this.newVillage = village;
-		this.newVillage.createVillage(getRandomInt(2, 5));
+		this.newVillage = new Settlement();
+		this.newVillage.createVillage(getRandomInt(4, 7));
 		this.allVillagers = this.newVillage.getVillagers();
 		this.timeMultiplier = timeMultiplier;
 
@@ -45,6 +44,18 @@ export class Game {
 	}
 
 	/**
+	 * Ends the game and resets all game-related properties.
+	 */
+	public endGame() {
+		this.pauseGame();
+		this.timeElapsed = 0;
+		this.isPaused = false;
+		this.allVillagers = [];
+		this.newVillage = null;
+		this.lastAgeUpdateTime = 0;
+	}
+
+	/**
 	 * Executes the game loop, updating the game state with the passage of time.
 	 */
 	private gameLoop() {
@@ -59,11 +70,14 @@ export class Game {
 		}
 
 		if (!this.isPaused) {
-			this.getCurrentGameDate();
-			gameStore.updateSettlement({
-				villagers: this.newVillage.getVillagersInfo(),
-				buildings: this.newVillage.getBuildingInfo(),
-			});
+			this.getCurrentGameDate(); // Update the game date
+
+			if (this.newVillage) {
+				gameStore.updateSettlement({
+					villagers: this.newVillage.getVillagersInfo(),
+					buildings: this.newVillage.getBuildingInfo(),
+				});
+			}
 		}
 	}
 

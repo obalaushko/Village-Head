@@ -1,67 +1,37 @@
-import { Game } from '@/services/GameService.ts';
 import {
 	Box,
 	Button,
 	Container,
 	ToggleButton,
 	ToggleButtonGroup,
-	Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
 import { GameSpeed } from '@/types/Game.type';
 
 // Icons
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
-import BlindRoundedIcon from '@mui/icons-material/BlindRounded';
+import AssistWalkerRoundedIcon from '@mui/icons-material/AssistWalkerRounded';
 import DirectionsWalkRoundedIcon from '@mui/icons-material/DirectionsWalkRounded';
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
+import gameStore from '@/state/GameStore.ts';
+import { observer } from 'mobx-react-lite';
 
-const ControlPanel: React.FC = () => {
-	const [game, setGame] = useState<Game | null>(null);
-	const [paused, setPaused] = useState<boolean>(false);
-	const [timeMultiplier, setTimeMultiplier] = useState<number>(1);
-
-	const createNewGame = () => {
-		const newGame = new Game(timeMultiplier as GameSpeed);
-		newGame.startGame();
-		setGame(newGame);
-	};
-
-	const handleNewGame = () => {
-		console.log('New Game');
-		if (game) {
-			game.pauseGame();
-			setGame(null); // Reset game state
-			setPaused(false); // Reset paused state
-
-			createNewGame();
-		} else {
-			createNewGame();
-		}
-	};
-
-	const handleTogglePauseGame = () => {
-		setPaused(!paused);
-		paused ? handleResumeGame() : handlePauseGame();
-	};
-
-	const handlePauseGame = () => {
-		console.log('Pause Game');
-		game?.pauseGame();
-	};
-
-	const handleResumeGame = () => {
-		console.log('Resume Game');
-		game?.resumeGame();
-	};
+const ControlPanel: React.FC = observer(() => {
+	const {
+		isInitialized,
+		timeMultiplier,
+		updateGameSpeed,
+		isPaused,
+		togglePauseGame,
+		initGame,
+		endGame,
+	} = gameStore;
 
 	const handleChangeTimeMultiplier = (
 		_event: React.MouseEvent<HTMLElement>,
-		multiplier: number,
+		multiplier: GameSpeed,
 	) => {
-		setTimeMultiplier(multiplier);
-		game?.updateMultiplier(multiplier as GameSpeed);
+		updateGameSpeed(multiplier);
 	};
 
 	return (
@@ -71,34 +41,46 @@ const ControlPanel: React.FC = () => {
 				display: 'flex',
 			}}
 		>
-			<Box m={2}>
-				<Typography variant="h5">Control Panel</Typography>
-			</Box>
-			<Box className="control-panel__buttons">
+			<Box className="control-panel__buttons" sx={{ margin: '20px 0' }}>
 				<Button
 					variant="outlined"
 					color="secondary"
-					onClick={() => handleNewGame()}
+					onClick={() => initGame()}
 				>
 					Нова гра
 				</Button>
+
 				<Button
 					variant="outlined"
-					disabled={!game}
-					onClick={() => handleTogglePauseGame()}
+					color={isPaused ? 'success' : 'warning'}
+					disabled={!isInitialized}
+					onClick={() => togglePauseGame()}
 					startIcon={
-						paused ? <PlayArrowRoundedIcon /> : <PauseRoundedIcon />
+						isPaused ? (
+							<PlayArrowRoundedIcon />
+						) : (
+							<PauseRoundedIcon />
+						)
 					}
 				>
-					{paused ? 'Відновити' : 'Зупинити'}
+					{isPaused ? 'Відновити' : 'Зупинити'}
+				</Button>
+				<Button
+					variant="outlined"
+					color="error"
+					disabled={!isInitialized}
+					onClick={() => endGame()}
+				>
+					Закінчити гру
 				</Button>
 				<ToggleButtonGroup
 					value={timeMultiplier}
+					disabled={isPaused || !isInitialized}
 					exclusive
 					onChange={handleChangeTimeMultiplier}
 				>
 					<ToggleButton value={1} aria-label="1x">
-						<BlindRoundedIcon />
+						<AssistWalkerRoundedIcon />
 					</ToggleButton>
 					<ToggleButton value={5} aria-label="5x">
 						<DirectionsWalkRoundedIcon />
@@ -110,6 +92,6 @@ const ControlPanel: React.FC = () => {
 			</Box>
 		</Container>
 	);
-};
+});
 
 export default ControlPanel;
