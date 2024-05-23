@@ -1,5 +1,5 @@
 import {
-	Coordinates,
+	SizeBuilding,
 	HouseType,
 	IBuilding,
 	createBuildingType,
@@ -11,7 +11,7 @@ export class Building implements IBuilding {
 	public readonly type: HouseType;
 	public readonly capacity: number;
 	public residents: Villager[];
-	public coordinates: Coordinates = { x: 0, y: 0 };
+	public size: SizeBuilding = { width: 0, height: 0 };
 
 	constructor({ id, type, capacity }: createBuildingType) {
 		this.id = id;
@@ -19,13 +19,13 @@ export class Building implements IBuilding {
 		this.capacity = capacity;
 		this.residents = [];
 
-		this.generateRandomCoordinates();
+		this.generateRandomSize();
 	}
 
-	protected generateRandomCoordinates() {
-		this.coordinates = {
-			x: Math.floor(Math.random() * 100),
-			y: Math.floor(Math.random() * 100),
+	protected generateRandomSize() {
+		this.size = {
+			width: Math.floor(Math.random() * 100),
+			height: Math.floor(Math.random() * 100),
 		};
 	}
 
@@ -37,7 +37,7 @@ export class Building implements IBuilding {
 			residents: this.residents.map((resident) =>
 				resident.getPersonInfo(),
 			),
-			coordinates: this.coordinates,
+			coordinates: this.size,
 		};
 	}
 }

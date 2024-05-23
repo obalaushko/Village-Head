@@ -6,15 +6,15 @@ export type createBuildingType = {
 	capacity: number;
 };
 
-export type Coordinates = {
-	x: number;
-	y: number;
+export type SizeBuilding = {
+	width: number;
+	height: number;
 };
 export interface IBuilding {
 	id: string;
 	type: HouseType;
 	capacity: number;
 	residents: Villager[];
-	coordinates: Coordinates;
+	size: SizeBuilding;
 }
 export type HouseType = 'residential' | 'commercial' | 'industrial';

@@ -4,44 +4,51 @@ import { GameSpeed } from '@/types/Game.type';
 import { getRandomInt } from '@/utils/utils.ts';
 import { workerClearInterval, workerSetInterval } from '@/utils/workerTimer.ts';
 
-import store from '@/state/Store.ts';
+import gameStore from '@/state/GameStore';
+/**
+ * Represents a game instance.
+ */
 export class Game {
-	private timerInterval: number | null = null; // worker-timers return numbers
-	private timeElapsed: number = 0; // Час, який пройшов в грі (у годинах)
-	private readonly hoursInYear: number = 87600; // Кількість годин у одному році
-	private readonly hoursInDay: number = 24; // Кількість годин у дні
-	private readonly monthsInYear: number = 12; // Кількість місяців у році
-	private readonly daysInYear: number = 365; // Кількість днів у році (не враховуючи високосний рік)
-	private timeMultiplier: GameSpeed = 1; // Множник швидкості часу (1: звичайна, 2: x2, 5: x5)
-	private isPaused: boolean = false;
-	private allVillagers: Villager[] = [];
-	private newVillage: Settlement;
-	private lastAgeUpdateTime: number = 0; // Час, коли останній раз оновлювався вік персонажів
+	private timerInterval: number | null = null; // The timer interval ID for the game loop
+	private timeElapsed: number = 0; // The time that has elapsed in the game (in hours)
+	private readonly hoursInYear: number = 87600; // The number of hours in a year
+	private readonly hoursInDay: number = 24; // The number of hours in a day
+	private readonly monthsInYear: number = 12; // The number of months in a year
+	private readonly daysInYear: number = 365; // The number of days in a year (excluding leap years)
+	private timeMultiplier: GameSpeed = 1; // The time speed multiplier (1: normal, 2: x2, 5: x5)
+	private isPaused: boolean = false; // Indicates whether the game is paused or not
+	private allVillagers: Villager[] = []; // An array of all the villagers in the village
+	private newVillage: Settlement; // The instance of the Settlement class representing the village
+	private lastAgeUpdateTime: number = 0; // The time when the age of villagers was last updated
 
 	constructor(timeMultiplier: GameSpeed = 1) {
-		// Ініціалізація гри
 		const village = new Settlement();
 		this.newVillage = village;
 		this.newVillage.createVillage(getRandomInt(2, 5));
 		this.allVillagers = this.newVillage.getVillagers();
 		this.timeMultiplier = timeMultiplier;
 
-		store.updateSettlement({
+		gameStore.updateSettlement({
 			villagers: this.newVillage.getVillagersInfo(),
 			buildings: this.newVillage.getBuildingInfo(),
 		});
 	}
 
-	// Метод для запуску гри або продовження з паузи
+	/**
+	 * Starts the game by initializing the game loop.
+	 * If the game is already running, this method does nothing.
+	 */
 	public startGame() {
 		if (!this.timerInterval) {
 			this.timerInterval = workerSetInterval(() => this.gameLoop(), 100);
 		}
 	}
 
-	// Основний цикл гри
+	/**
+	 * Executes the game loop, updating the game state with the passage of time.
+	 */
 	private gameLoop() {
-		this.timeElapsed += 0.1 * this.timeMultiplier; // Оновлюємо час у грі (0.1 if 100ms interval)
+		this.timeElapsed += 0.1 * this.timeMultiplier; // Update game time (0.1 if 100ms interval)
 
 		const yearsElapsed = Math.floor(this.timeElapsed / this.hoursInYear);
 		if (
@@ -49,15 +56,13 @@ export class Game {
 		) {
 			this.updateVillagersAge();
 			this.lastAgeUpdateTime = this.timeElapsed;
-
 		}
 
 		if (!this.isPaused) {
-			// Інші дії, які повинні відбуватися з плином часу
 			this.getCurrentGameDate();
-			store.updateSettlement({
+			gameStore.updateSettlement({
 				villagers: this.newVillage.getVillagersInfo(),
-				buildings: this.newVillage.getBuildingInfo()
+				buildings: this.newVillage.getBuildingInfo(),
 			});
 		}
 	}
@@ -70,31 +75,40 @@ export class Game {
 		this.timeMultiplier = multiplier;
 	}
 
-	// Метод для призупинення гри
+	/**
+	 * Pauses the game by clearing the timer interval and setting the game state to paused.
+	 */
 	public pauseGame() {
 		if (this.timerInterval) {
-			workerClearInterval(this.timerInterval); // Призупиняємо таймер
+			workerClearInterval(this.timerInterval);
 			this.timerInterval = null;
-			this.isPaused = true; // Встановлюємо гру на паузу
+			this.isPaused = true;
 		}
 	}
 
-	// Метод для відновлення гри з паузи
+	/**
+	 * Resumes the game by starting the game loop and setting the game state to not paused.
+	 */
 	public resumeGame() {
 		if (this.isPaused) {
-			this.startGame(); // Запускаємо або продовжуємо гру з паузи
-			this.isPaused = false; // Знімаємо гру з паузи
+			this.startGame();
+			this.isPaused = false;
 		}
 	}
 
-	// Метод для оновлення віку всіх сільських жителів
+	/**
+	 * Updates the age of all villagers in the village.
+	 * Increments the age of each villager by calling their `incrementAge` method.
+	 */
 	private updateVillagersAge() {
 		for (const villager of this.allVillagers) {
-			villager.incrementAge(); // Викликаємо метод для збільшення віку у сільського жителя
+			villager.incrementAge();
 		}
 	}
 
-	// Метод для отримання поточного ігрового року, місяця і дня
+	/**
+	 * Retrieves the current game date based on the elapsed time.
+	 */
 	private getCurrentGameDate() {
 		const totalDaysElapsed = Math.floor(this.timeElapsed / this.hoursInDay);
 		const currentYear = Math.floor(totalDaysElapsed / this.daysInYear);
@@ -112,7 +126,7 @@ export class Game {
 			currentDay -= daysInMonth[i];
 		}
 
-		store.updateGameTime({
+		gameStore.updateGameTime({
 			year: currentYear,
 			month: currentMonth,
 			day: currentDay + 1,
