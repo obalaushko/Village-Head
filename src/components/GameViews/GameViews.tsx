@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
 import './GameViews.scss';
-import { useEffect } from 'react';
 import SideBar from '../SideBar/SideBar.tsx';
 import SettlementView from '../Settlement/Settlement.views.tsx';
 import { observer } from 'mobx-react-lite';
@@ -8,9 +7,6 @@ import gameStore from '@/state/GameStore.ts';
 
 const GameViews: React.FC = observer(() => {
 	const { gameLink } = gameStore;
-	useEffect(() => {
-
-	}, [gameLink]);
 
 	return (
 		<Box className="game-views" sx={{ display: 'flex', height: '100%' }}>

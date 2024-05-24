@@ -1,10 +1,14 @@
 import { Box } from '@mui/material';
 import Residential from '../Building/Residential.tsx';
-import { useEffect, useRef, useState } from 'react';
-import { Block } from '@/types/Building.type.ts';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Block, IBuilding } from '@/types/Building.type.ts';
 import { observer } from 'mobx-react-lite';
 import gameStore from '@/state/GameStore.ts';
-import { generateRandomCoordinate, isOverlapping } from '@/utils/utils.ts';
+import {
+	generateRandomCoordinate,
+	isOutOfBounds,
+	isOverlapping,
+} from '@/utils/utils.ts';
 
 interface ContainerSize {
 	width: number;
@@ -22,8 +26,6 @@ const SettlementView: React.FC = observer(() => {
 		isInitialized,
 		isLaunched,
 	} = gameStore;
-
-	const numBlocks = buildings.length; // Кількість блоків
 
 	// Обробник подій resize
 	useEffect(() => {
@@ -46,52 +48,61 @@ const SettlementView: React.FC = observer(() => {
 		};
 	}, []);
 
-	useEffect(() => {
-		const createBlocks = () => {
-			const newBlocks = [];
-			if (!containerSize) return;
+	const placeBlockRandomly = (
+		containerWidth: number,
+		containerHeight: number,
+		block: Block,
+	): Block => {
+		block.x = generateRandomCoordinate(containerWidth, block.width);
+		block.y = generateRandomCoordinate(containerHeight, block.height);
+		return block;
+	};
 
-			for (let i = 0; i < numBlocks; i++) {
-				const block: Block = {
-					width: buildings[i].size.width,
-					height: buildings[i].size.height,
-					x: generateRandomCoordinate(containerSize.width),
-					y: generateRandomCoordinate(containerSize.height),
-				};
+	const placeBlocks = useCallback(
+		(containerWidth: number, containerHeight: number, blocks: IBuilding[]) => {
+			const placedBlocks: Block[] = [];
 
-				// Перевірка, щоб блок не виходив за межі контейнера
-				if (block.x + block.width > containerSize.width) {
-					block.x = containerSize.width - (block.width + 5);
-				}
-				if (block.y + block.height > containerSize.height) {
-					block.y = containerSize.height - (block.height + 5);
-				}
+			for (let i = 0; i < blocks.length; i++) {
+				const block = blocks[i];
+				let placed = false;
 
-				// Пошук валідної позиції для блоку
-				let isValid = false;
-				let attempts = 0;
-				while (!isValid && attempts < 1000) {
-					isValid = newBlocks.every(
-						(existingBlock) => !isOverlapping(block, existingBlock),
-					);
-					attempts++;
-				}
+				while (!placed) {
+					placeBlockRandomly(containerWidth, containerHeight, block.size);
 
-				if (isValid) {
-					newBlocks.push(block);
-				} else {
-					console.log(
-						'Не вдалося знайти позицію для блоку після 1000 спроб',
-					);
+					// Перевірити, чи не виходить блок за межі контейнера
+					if (isOutOfBounds(block.size, containerWidth, containerHeight)) {
+						continue;
+					}
+
+					// Перевірити, чи не перетинається блок з іншими блоками
+					let overlapping = false;
+					for (let j = 0; j < placedBlocks.length; j++) {
+						if (isOverlapping(block.size, placedBlocks[j])) {
+							overlapping = true;
+							break;
+						}
+					}
+
+					// Якщо блок не перетинається і не виходить за межі, розмістити його
+					if (!overlapping) {
+						placedBlocks.push({ ...block.size });
+						placed = true;
+					}
 				}
 			}
-			setBlocks(newBlocks);
-			gameStore.launchGame();
-		};
+
+			setBlocks(placedBlocks);
+		},
+		[setBlocks]
+	);
+
+	useEffect(() => {
 		if (isInitialized && !isLaunched) {
-			createBlocks();
+			if (!containerSize) return;
+
+			placeBlocks(containerSize.width, containerSize.height, buildings);
 		}
-	}, [buildings, containerSize, numBlocks, isLaunched, isInitialized]);
+	}, [buildings, containerSize, isInitialized, isLaunched, placeBlocks]);
 
 	return (
 		<Box

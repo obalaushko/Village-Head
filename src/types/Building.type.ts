@@ -9,6 +9,8 @@ export type createBuildingType = {
 export type SizeBuilding = {
 	width: number;
 	height: number;
+	x: number;
+	y: number;
 };
 export interface IBuilding {
 	id: string;

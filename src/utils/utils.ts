@@ -13,12 +13,13 @@ export const getRandomInt = (min: number, max: number): number => {
 
 
 /**
- * Generates a random coordinate within the specified range.
- * @param max - The maximum value for the coordinate (exclusive).
- * @returns A random coordinate.
+ * Generates a random coordinate within a given range.
+ * @param max - The maximum value for the coordinate.
+ * @param blockSize - The size of the block within which the coordinate should be generated.
+ * @returns A random coordinate within the specified range.
  */
-export const generateRandomCoordinate = (max: number) =>
-	Math.floor(Math.random() * max);
+export const generateRandomCoordinate = (max: number, blockSize: number): number =>
+    Math.floor(Math.random() * (max - blockSize));
 
 /**
  * Checks if two blocks are overlapping.
@@ -32,5 +33,25 @@ export const isOverlapping = (block1: Block, block2: Block) => {
 		block2.x + block2.width <= block1.x ||
 		block1.y + block1.height <= block2.y ||
 		block2.y + block2.height <= block1.y
+	);
+};
+
+/**
+ * Checks if a block is out of bounds within a given container.
+ * @param block - The block to check.
+ * @param containerWidth - The width of the container.
+ * @param containerHeight - The height of the container.
+ * @returns True if the block is out of bounds, false otherwise.
+ */
+export const isOutOfBounds = (
+	block: Block,
+	containerWidth: number,
+	containerHeight: number,
+) => {
+	return (
+		block.x < 0 ||
+		block.y < 0 ||
+		block.x + block.width > containerWidth ||
+		block.y + block.height > containerHeight
 	);
 };
