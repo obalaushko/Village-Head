@@ -1,19 +1,23 @@
-import { Block } from '@/types/Building.type.ts';
+import theme from '@/theme.tsx';
+import { IBuilding } from '@/types/Building.type.ts';
 import { Box } from '@mui/material';
 
-const Residential = ({ block, index }: { block: Block; index: number }) => {
+const Residential = ({ block, index }: { block: IBuilding; index: number }) => {
+	const { size, residents } = block;
+
 	return (
 		<Box
 			style={{
 				position: 'absolute',
-				width: block.width,
-				height: block.height,
-				top: block.y,
-				left: block.x,
-				backgroundColor: 'rgba(0, 150, 255, 0.5)',
+				width: size.width,
+				height: size.height,
+				top: size.y,
+				left: size.x,
+				backgroundColor: theme.palette.primary.main,
 			}}
 		>
-			Block {index + 1}
+			{index + 1} <br />
+			{residents.length}
 		</Box>
 	);
 };

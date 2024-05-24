@@ -20,7 +20,7 @@ const ControlPanel: React.FC = observer(() => {
 		isInitialized,
 		timeMultiplier,
 		updateGameSpeed,
-		initGame,
+		startGame,
 		endGame,
 	} = gameStore;
 
@@ -42,7 +42,7 @@ const ControlPanel: React.FC = observer(() => {
 				<Button
 					variant="outlined"
 					color="secondary"
-					onClick={() => initGame()}
+					onClick={() => startGame()}
 				>
 					Нова гра
 				</Button>

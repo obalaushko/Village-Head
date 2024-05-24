@@ -1,32 +1,32 @@
 import { Game } from '@/services/GameService.ts';
 import { GameSpeed, IGameTime, ISettlement } from '@/types/Game.type';
-import { makeAutoObservable, autorun, runInAction } from 'mobx';
+import { makeAutoObservable, autorun } from 'mobx';
 
 class GameStore {
+	private game: Game | undefined;
+	settlement: ISettlement = { buildings: [], villagers: [] };
 	curreentGameTime: IGameTime = {
 		day: 0,
 		month: 0,
 		year: 0,
 	};
 	showLogs: boolean = true;
-	settlement: ISettlement = {
-		villagers: [],
-		buildings: [],
-	};
 	isInitialized: boolean = false;
-	isLaunched: boolean = false;
 	isPaused: boolean = false;
-	gameLink: Game | null = null;
 	timeMultiplier: GameSpeed = 1;
 
 	constructor() {
 		makeAutoObservable(this);
 	}
 
-	private linkNewGame = (game: Game) => {
-		runInAction(() => {
-			this.gameLink = game;
-		});
+	public startGame = () => {
+		if (this.isInitialized) {
+			this.endGame();
+		}
+
+		this.game = new Game();
+
+		console.log('Init New Game');
 	};
 
 	// Game --> Store
@@ -39,51 +39,45 @@ class GameStore {
 	};
 
 	// Game --> Store
-	updateSettlement = ({ villagers, buildings }: ISettlement) => {
-		this.settlement.villagers = villagers;
-		this.settlement.buildings = buildings;
-	};
+	// updateSettlement = ({ villagers, buildings }: ISettlement) => {
+	// 	this.settlement.villagers = villagers;
+	// 	this.settlement.buildings = buildings;
+	// };
 
-	initGame = () => {
-		if (this.gameLink) {
-			this.endGame();
-		}
-
-		const newGame = new Game();
-		this.linkNewGame(newGame);
-
-		this.isInitialized = true;
-
-		console.log('Init New Game');
-	};
-
-	launchGame = () => {
-		this.isLaunched = true;
-
-		this.gameLink?.startGame();
-	};
-
-	updateGameSpeed = (speed: GameSpeed) => {
-		this.timeMultiplier = speed;
-		this.gameLink?.updateMultiplier(speed);
+	/**
+	 * Updates the game speed and performs necessary actions based on the speed value.
+	 * @public Use in UI
+	 * @param speed - The new game speed.
+	 */
+	public updateGameSpeed = (speed: GameSpeed) => {
+		this.game?.updateMultiplier(speed);
 		if (speed === 0) {
-			this.gameLink?.pauseGame()
+			this.game?.pauseGame();
 		} else {
-			this.gameLink?.resumeGame()
+			this.game?.resumeGame();
 		}
 	};
 
-	endGame = () => {
-		this.gameLink?.endGame();
-
-		runInAction(() => {
-			this.gameLink = null;
-			this.isInitialized = false;
-			this.isLaunched = false;
-			this.timeMultiplier = 1;
-			this.curreentGameTime = { day: 0, month: 0, year: 0 };
-		});
+	public getSettlementInfo = () => {
+		return {
+			buildings: this.settlement?.buildings.map((building) => building.getHouseInfo()),
+			villagers: this.settlement?.villagers.map((villager) => villager.getPersonInfo()),
+		};
 	};
+
+	public endGame = () => {
+		this.game?.endGame();
+	};
+
+	resetGameData = () => {
+		this.game = undefined;
+		this.settlement = { buildings: [], villagers: [] };
+		this.curreentGameTime = { day: 0, month: 0, year: 0 };
+		this.isInitialized = false;
+		this.isPaused = false;
+		this.timeMultiplier = 1;
+
+	}
 }
 
 const gameStore = new GameStore();

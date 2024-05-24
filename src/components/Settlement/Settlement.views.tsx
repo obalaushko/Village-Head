@@ -19,13 +19,9 @@ const SettlementView: React.FC = observer(() => {
 	const [containerSize, setContainerSize] = useState<ContainerSize | null>(
 		null,
 	);
-	const [blocks, setBlocks] = useState<Block[]>([]);
+	const [blocks, setBlocks] = useState<IBuilding[]>([]);
 	const refContainer = useRef<HTMLDivElement | null>(null);
-	const {
-		settlement: { buildings },
-		isInitialized,
-		isLaunched,
-	} = gameStore;
+	const { getSettlementInfo, isInitialized } = gameStore;
 
 	// Обробник подій resize
 	useEffect(() => {
@@ -59,25 +55,39 @@ const SettlementView: React.FC = observer(() => {
 	};
 
 	const placeBlocks = useCallback(
-		(containerWidth: number, containerHeight: number, blocks: IBuilding[]) => {
-			const placedBlocks: Block[] = [];
+		(
+			containerWidth: number,
+			containerHeight: number,
+			blocks: IBuilding[],
+		) => {
+			const placedBlocks: IBuilding[] = [];
 
 			for (let i = 0; i < blocks.length; i++) {
 				const block = blocks[i];
 				let placed = false;
 
 				while (!placed) {
-					placeBlockRandomly(containerWidth, containerHeight, block.size);
+					placeBlockRandomly(
+						containerWidth,
+						containerHeight,
+						block.size,
+					);
 
 					// Перевірити, чи не виходить блок за межі контейнера
-					if (isOutOfBounds(block.size, containerWidth, containerHeight)) {
+					if (
+						isOutOfBounds(
+							block.size,
+							containerWidth,
+							containerHeight,
+						)
+					) {
 						continue;
 					}
 
 					// Перевірити, чи не перетинається блок з іншими блоками
 					let overlapping = false;
 					for (let j = 0; j < placedBlocks.length; j++) {
-						if (isOverlapping(block.size, placedBlocks[j])) {
+						if (isOverlapping(block.size, placedBlocks[j].size)) {
 							overlapping = true;
 							break;
 						}
@@ -85,25 +95,33 @@ const SettlementView: React.FC = observer(() => {
 
 					// Якщо блок не перетинається і не виходить за межі, розмістити його
 					if (!overlapping) {
-						placedBlocks.push({ ...block.size });
+						placedBlocks.push({ ...block });
 						placed = true;
 					}
 				}
 			}
 
 			setBlocks(placedBlocks);
-			gameStore.launchGame();
 		},
-		[setBlocks]
+		[setBlocks],
 	);
 
 	useEffect(() => {
-		if (isInitialized && !isLaunched) {
+		if (isInitialized) {
 			if (!containerSize) return;
 
-			placeBlocks(containerSize.width, containerSize.height, buildings);
+			placeBlocks(
+				containerSize.width,
+				containerSize.height,
+				getSettlementInfo().buildings,
+			);
 		}
-	}, [buildings, containerSize, isInitialized, isLaunched, placeBlocks]);
+	}, [
+		containerSize,
+		isInitialized,
+		placeBlocks,
+		getSettlementInfo,
+	]);
 
 	return (
 		<Box

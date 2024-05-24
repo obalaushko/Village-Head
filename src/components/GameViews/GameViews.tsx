@@ -6,13 +6,15 @@ import { observer } from 'mobx-react-lite';
 import gameStore from '@/state/GameStore.ts';
 
 const GameViews: React.FC = observer(() => {
-	const { gameLink } = gameStore;
+	const { isInitialized, getSettlementInfo, settlement } = gameStore;
+	console.log(getSettlementInfo())
+	console.log(settlement)
 
 	return (
 		<Box className="game-views" sx={{ display: 'flex', height: '100%' }}>
 			<SideBar />
 			<Box className="game-views__content" sx={{ flex: 8 }}>
-				{gameLink && <SettlementView />}
+				{isInitialized && <SettlementView />}
 			</Box>
 		</Box>
 	);

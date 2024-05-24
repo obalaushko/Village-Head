@@ -1,5 +1,7 @@
-import { IPerson } from './Person.type.ts';
-import { IBuilding } from './Building.type.ts';
+// import { IPerson } from './Person.type.ts';
+// import { IBuilding } from './Building.type.ts';
+import { Villager } from '@/models/Characters/Villager.ts';
+import { Building } from '@/models/Buildings/Building.ts';
 
 export type GameSpeed = 0 | 1 | 5 | 10; // Швидкість гри (1: звичайна, 5: x5, 10: x10)
 
@@ -10,6 +12,6 @@ export interface IGameTime {
 }
 
 export interface ISettlement {
-	villagers: IPerson[];
-	buildings: IBuilding[];
+	villagers: Villager[];
+	buildings: Building[];
 }

@@ -4,13 +4,15 @@ import villagersData from '@/mock/villagers.json';
 import { getRandomInt } from '@/utils/utils.ts';
 import { Residential } from '../Buildings/Building.ts';
 import { IBuilding } from '@/types/Building.type.ts';
+import gameStore from '@/state/GameStore.ts';
+import { ISettlement } from '@/types/Game.type.ts';
 
 /**
  * Represents a settlement with houses and villagers.
  */
-export class Settlement {
-	private villagers: Villager[] = [];
-	private buildings: Residential[] = [];
+export class Settlement implements ISettlement {
+	villagers: Villager[] = [];
+	buildings: Residential[] = [];
 
 	/**
 	 * Creates a village by creating houses, villagers, and assigning villagers to houses.
@@ -20,6 +22,11 @@ export class Settlement {
 		this.createHouses(numberOfHouses);
 		this.createVillagers();
 		this.assignVillagersToHouses();
+
+		gameStore.settlement = {
+			buildings: this.buildings,
+			villagers: this.villagers,
+		};
 	}
 
 	/**
@@ -108,10 +115,18 @@ export class Settlement {
 	}
 
 	/**
-	 * Gets information about the houses in the settlement.
-	 * @returns An array of houses' information.
+	 * Retrieves information about the buildings in the settlement.
+	 * @returns An array of building information.
 	 */
 	public getBuildingInfo(): IBuilding[] {
+		return this.buildings.map((building) => building.getHouseInfo());
+	}
+
+	/**
+	 * Retrieves the buildings in the settlement.
+	 * @returns An array of IBuilding objects representing the buildings in the settlement.
+	 */
+	public getBuilding() {
 		return this.buildings;
 	}
 }

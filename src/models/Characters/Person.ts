@@ -14,21 +14,21 @@ export class Person {
 	 */
 	protected readonly MAX_HAPPINESS: number = 100;
 	protected readonly id: string;
-	protected fullName: string;
-	protected age: number;
-	protected sex: string;
-	protected health: number = 0;
-	protected happiness: number = 0;
-	protected food: number = 0;
-	protected money: number = 0;
-	protected request: string[] = [];
-	protected job: jobType = {
+	public fullName: string;
+	public age: number;
+	public sex: string;
+	public health: number = 0;
+	public happiness: number = 0;
+	public food: number = 0;
+	public money: number = 0;
+	public request: string[] = [];
+	public job: jobType = {
 		name: '',
 		salary: 0,
 		location: '',
 	};
-	protected clothes: number = 0;
-	protected entertainment: boolean = false;
+	public clothes: number = 0;
+	public entertainment: boolean = false;
 
 	/**
 	 * Creates a new instance of the Person class.
