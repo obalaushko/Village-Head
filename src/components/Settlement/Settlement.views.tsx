@@ -92,6 +92,7 @@ const SettlementView: React.FC = observer(() => {
 			}
 
 			setBlocks(placedBlocks);
+			gameStore.launchGame();
 		},
 		[setBlocks]
 	);
