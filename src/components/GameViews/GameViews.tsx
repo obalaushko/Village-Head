@@ -7,6 +7,7 @@ import gameStore from '@/state/GameStore.ts';
 
 const GameViews: React.FC = observer(() => {
 	const { getGameId, getSettlementInfo } = gameStore;
+
 	return (
 		<Box className="game-views" sx={{ display: 'flex', height: '100%' }}>
 			<SideBar />

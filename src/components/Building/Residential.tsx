@@ -1,9 +1,8 @@
-import theme from '@/theme.tsx';
 import { IBuilding } from '@/types/Building.type.ts';
 import { Box } from '@mui/material';
 
 const Residential = ({ block, index }: { block: IBuilding; index: number }) => {
-	const { size, residents } = block;
+	const { size, residents, color } = block;
 
 	return (
 		<Box
@@ -13,7 +12,7 @@ const Residential = ({ block, index }: { block: IBuilding; index: number }) => {
 				height: size.height,
 				top: size.y,
 				left: size.x,
-				backgroundColor: theme.palette.primary.main,
+				backgroundColor: color,
 			}}
 		>
 			{index + 1} <br />

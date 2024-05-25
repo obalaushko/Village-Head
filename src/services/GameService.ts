@@ -26,18 +26,20 @@ export class Game {
 	constructor(timeMultiplier: GameSpeed = 1) {
 		this.gameId = uuidv4();
 		this.settlement = new Settlement();
-		this.settlement.createVillage(getRandomInt(4, 7));
+		this.settlement.createVillage(getRandomInt(5, 12));
 		this.allVillagers = this.settlement.getVillagers();
 		this.timeMultiplier = timeMultiplier;
 
 		this.startGame();
 		gameStore.isInitialized = true;
+
+		console.log(`Start Game ${this.gameId}`);
 	}
 	/**
 	 * Starts the game by initializing the game loop.
 	 * If the game is already running, this method does nothing.
 	 */
-	public startGame() {
+	private startGame() {
 		if (!this.timerInterval) {
 			this.timerInterval = workerSetInterval(() => this.gameLoop(), 100);
 		}
@@ -56,6 +58,8 @@ export class Game {
 
 		// Clear store
 		gameStore.resetGameData();
+
+		console.log(`End Game ${this.gameId}`);
 	}
 
 	/**
@@ -145,11 +149,10 @@ export class Game {
 			}
 			currentDay -= daysInMonth[i];
 		}
-
-		gameStore.updateGameTime({
+		gameStore.setGameTime = {
 			year: currentYear,
 			month: currentMonth,
 			day: currentDay + 1,
-		});
+		};
 	}
 }

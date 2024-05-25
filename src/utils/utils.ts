@@ -1,3 +1,9 @@
+import {
+	Building,
+	Commercial,
+	Industrial,
+	Residential,
+} from '@/models/Buildings/Building.ts';
 import { Block } from '@/types/Building.type.ts';
 
 /**
@@ -11,15 +17,16 @@ export const getRandomInt = (min: number, max: number): number => {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-
 /**
  * Generates a random coordinate within a given range.
  * @param max - The maximum value for the coordinate.
  * @param blockSize - The size of the block within which the coordinate should be generated.
  * @returns A random coordinate within the specified range.
  */
-export const generateRandomCoordinate = (max: number, blockSize: number): number =>
-    Math.floor(Math.random() * (max - blockSize));
+export const generateRandomCoordinate = (
+	max: number,
+	blockSize: number,
+): number => Math.floor(Math.random() * (max - blockSize));
 
 /**
  * Checks if two blocks are overlapping.
@@ -54,4 +61,31 @@ export const isOutOfBounds = (
 		block.x + block.width > containerWidth ||
 		block.y + block.height > containerHeight
 	);
+};
+
+/**
+ * Checks if a given building is of type Residential.
+ * @param building - The building to check.
+ * @returns True if the building is of type Residential, false otherwise.
+ */
+export const isResidential = (building: Building): building is Residential => {
+	return building.type === 'residential';
+};
+
+/**
+ * Checks if a given building is of type 'commercial'.
+ * @param building - The building to check.
+ * @returns True if the building is of type 'commercial', false otherwise.
+ */
+export const isCommercial = (building: Building): building is Commercial => {
+	return building.type === 'commercial';
+};
+
+/**
+ * Checks if a given building is of type Industrial.
+ * @param building - The building to check.
+ * @returns A boolean indicating whether the building is of type Industrial.
+ */
+export const isIndustrial = (building: Building): building is Industrial => {
+	return building.type === 'industrial';
 };

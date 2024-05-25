@@ -13,7 +13,7 @@ class GameStore {
 		month: 0,
 		year: 0,
 	};
-	showLogs: boolean = true;
+	showLogs: boolean = false;
 	isInitialized: boolean = false;
 	isPaused: boolean = false;
 	timeMultiplier: GameSpeed = 1;
@@ -29,8 +29,6 @@ class GameStore {
 
 		this.gameInstanse = new Game();
 		this.gameId = this.gameInstanse.gameId;
-
-		console.log('Init New Game');
 	};
 
 	/**
@@ -41,20 +39,18 @@ class GameStore {
 		return this.gameId;
 	}
 
-	// Game --> Store
-	updateGameTime = (gameTime: IGameTime) => {
+	/**
+	 * Setter for the game time.
+	 * @protected Only use in Game class!
+	 * @param {IGameTime} gameTime - The new game time.
+	 */
+	set setGameTime(gameTime: IGameTime) {
 		this.curreentGameTime = gameTime;
-	};
+	}
 
 	toggleLogs = () => {
 		this.showLogs = !this.showLogs;
 	};
-
-	// Game --> Store
-	// updateSettlement = ({ villagers, buildings }: ISettlement) => {
-	// 	this.settlement.villagers = villagers;
-	// 	this.settlement.buildings = buildings;
-	// };
 
 	/**
 	 * Updates the game speed and performs necessary actions based on the speed value.

@@ -1,9 +1,9 @@
 import { IPerson, createPersonType, sexType } from '@/types/Person.type.ts';
 import { Villager } from '../Characters/Villager.ts';
 import villagersData from '@/mock/villagers.json';
-import { getRandomInt } from '@/utils/utils.ts';
+import { getRandomInt, isResidential } from '@/utils/utils.ts';
 import { Residential } from '../Buildings/Building.ts';
-import { IBuilding } from '@/types/Building.type.ts';
+import { BuildingsType, IBuilding } from '@/types/Building.type.ts';
 import gameStore from '@/state/GameStore.ts';
 import { ISettlement } from '@/types/Game.type.ts';
 
@@ -11,8 +11,8 @@ import { ISettlement } from '@/types/Game.type.ts';
  * Represents a settlement with houses and villagers.
  */
 export class Settlement implements ISettlement {
-	villagers: Villager[] = [];
-	buildings: Residential[] = [];
+	public villagers: Villager[] = [];
+	public buildings: BuildingsType[] = [];
 
 	/**
 	 * Creates a village by creating houses, villagers, and assigning villagers to houses.
@@ -36,7 +36,7 @@ export class Settlement implements ISettlement {
 	private createHouses(numberOfHouses: number) {
 		for (let i = 0; i < numberOfHouses; i++) {
 			const house = new Residential({
-				id: `house-${i + 1}`,
+				id: `residential-${i + 1}`,
 				capacity: getRandomInt(2, 5),
 			});
 			this.buildings.push(house);
@@ -48,6 +48,7 @@ export class Settlement implements ISettlement {
 	 */
 	private createVillagers() {
 		for (const house of this.buildings) {
+			// const { capacity } = house.getHouseInfo();
 			for (let i = 0; i < house.capacity; i++) {
 				const villager = new Villager(this.generateRandomPersonData());
 				this.villagers.push(villager);
@@ -61,14 +62,17 @@ export class Settlement implements ISettlement {
 	private assignVillagersToHouses() {
 		let villagerIndex = 0;
 		for (const house of this.buildings) {
+			// const { capacity, residents } = house.getHouseInfo();
 			while (
 				house.residents.length < house.capacity &&
 				villagerIndex < this.villagers.length
 			) {
 				const villager = this.villagers[villagerIndex];
 
-				house.addResident(villager);
-				villagerIndex++;
+				if (isResidential(house)) {
+					house.addResident(villager);
+					villagerIndex++;
+				}
 			}
 		}
 	}

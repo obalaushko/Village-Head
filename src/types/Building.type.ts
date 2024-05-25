@@ -1,7 +1,7 @@
+import { Commercial, Industrial, Residential } from '@/models/Buildings/Building.ts';
 import { Villager } from '@/models/Characters/Villager.ts';
 
 export type createBuildingType = {
-	id: string;
 	type: HouseType;
 	capacity: number;
 };
@@ -18,8 +18,11 @@ export interface IBuilding {
 	capacity: number;
 	residents: Villager[];
 	size: SizeBuilding;
+	color: string;
 }
 export type HouseType = 'residential' | 'commercial' | 'industrial';
+
+export type BuildingsType = Residential | Commercial | Industrial;
 
 export interface Block { // TODO: remove (duplicate of SizeBuilding)
 	x: number;
