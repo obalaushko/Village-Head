@@ -29,6 +29,7 @@
             "@db/*": ["src/db/*"],
             "@services/*": ["src/services/*"],
             "@utils/*": ["src/utils/*"],
+            "@assets/*": ["src/assets/*"],
         }
 	},
 	"include": ["src"],

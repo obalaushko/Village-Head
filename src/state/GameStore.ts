@@ -3,6 +3,7 @@ import { Game } from '@/services/GameService.ts';
 import { GameSpeed, IGameTime, ISettlement } from '@/types/Game.type';
 import { makeAutoObservable, autorun } from 'mobx';
 
+// * set for Game instance, get for UI, public for UI
 class GameStore {
 	private gameInstanse: Game | undefined;
 	private settlementInstanse: Settlement | undefined;

@@ -116,7 +116,7 @@ export class Game {
 			this.isPaused = false;
 
 			gameStore.isPaused = false;
-			console.log('resumeGame');
+			console.log(`resumeGame, gameSpeed: ${this.timeMultiplier}`);
 		}
 	}
 
