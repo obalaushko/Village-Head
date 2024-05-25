@@ -21,7 +21,7 @@ export interface IBuilding {
 }
 export type HouseType = 'residential' | 'commercial' | 'industrial';
 
-export interface Block {
+export interface Block { // TODO: remove (duplicate of SizeBuilding)
 	x: number;
 	y: number;
 	width: number;

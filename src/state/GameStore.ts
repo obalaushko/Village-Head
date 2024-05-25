@@ -1,9 +1,12 @@
+import { Settlement } from '@/models/Settlement/Settlement.ts';
 import { Game } from '@/services/GameService.ts';
 import { GameSpeed, IGameTime, ISettlement } from '@/types/Game.type';
 import { makeAutoObservable, autorun } from 'mobx';
 
 class GameStore {
-	private game: Game | undefined;
+	private gameInstanse: Game | undefined;
+	private settlementInstanse: Settlement | undefined;
+	private gameId: string | undefined;
 	settlement: ISettlement = { buildings: [], villagers: [] };
 	curreentGameTime: IGameTime = {
 		day: 0,
@@ -24,10 +27,19 @@ class GameStore {
 			this.endGame();
 		}
 
-		this.game = new Game();
+		this.gameInstanse = new Game();
+		this.gameId = this.gameInstanse.gameId;
 
 		console.log('Init New Game');
 	};
+
+	/**
+	 * Gets the game ID.
+	 * @returns The game ID.
+	 */
+	public get getGameId() {
+		return this.gameId;
+	}
 
 	// Game --> Store
 	updateGameTime = (gameTime: IGameTime) => {
@@ -50,34 +62,38 @@ class GameStore {
 	 * @param speed - The new game speed.
 	 */
 	public updateGameSpeed = (speed: GameSpeed) => {
-		this.game?.updateMultiplier(speed);
+		this.gameInstanse?.updateMultiplier(speed);
 		if (speed === 0) {
-			this.game?.pauseGame();
+			this.gameInstanse?.pauseGame();
 		} else {
-			this.game?.resumeGame();
+			this.gameInstanse?.resumeGame();
 		}
 	};
 
 	public getSettlementInfo = () => {
 		return {
-			buildings: this.settlement?.buildings.map((building) => building.getHouseInfo()),
-			villagers: this.settlement?.villagers.map((villager) => villager.getPersonInfo()),
+			buildings: this.settlement?.buildings.map((building) =>
+				building.getHouseInfo(),
+			),
+			villagers: this.settlement?.villagers.map((villager) =>
+				villager.getPersonInfo(),
+			),
 		};
 	};
 
 	public endGame = () => {
-		this.game?.endGame();
+		this.gameInstanse?.endGame();
 	};
 
 	resetGameData = () => {
-		this.game = undefined;
+		this.gameInstanse = undefined;
+		this.gameId = undefined;
 		this.settlement = { buildings: [], villagers: [] };
 		this.curreentGameTime = { day: 0, month: 0, year: 0 };
 		this.isInitialized = false;
 		this.isPaused = false;
 		this.timeMultiplier = 1;
-
-	}
+	};
 }
 
 const gameStore = new GameStore();

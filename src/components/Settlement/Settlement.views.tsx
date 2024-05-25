@@ -3,141 +3,142 @@ import Residential from '../Building/Residential.tsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Block, IBuilding } from '@/types/Building.type.ts';
 import { observer } from 'mobx-react-lite';
-import gameStore from '@/state/GameStore.ts';
 import {
 	generateRandomCoordinate,
 	isOutOfBounds,
 	isOverlapping,
 } from '@/utils/utils.ts';
+import { IPerson } from '@/types/Person.type.ts';
 
 interface ContainerSize {
 	width: number;
 	height: number;
 }
 
-const SettlementView: React.FC = observer(() => {
-	const [containerSize, setContainerSize] = useState<ContainerSize | null>(
-		null,
-	);
-	const [blocks, setBlocks] = useState<IBuilding[]>([]);
-	const refContainer = useRef<HTMLDivElement | null>(null);
-	const { getSettlementInfo, isInitialized } = gameStore;
+interface SettlementViewProps {
+	gameId: string | undefined;
+	getSettlementInfo: () => { buildings: IBuilding[]; villagers: IPerson[] };
+}
 
-	// Обробник подій resize
-	useEffect(() => {
-		setContainerSize({
-			width: refContainer.current?.clientWidth || 0,
-			height: refContainer.current?.clientHeight || 0,
-		});
-		const handleResize = () => {
+const SettlementView: React.FC<SettlementViewProps> = observer(
+	({ gameId, getSettlementInfo }) => {
+		const [containerSize, setContainerSize] =
+			useState<ContainerSize | null>(null);
+		const [blocks, setBlocks] = useState<IBuilding[]>([]);
+		const refContainer = useRef<HTMLDivElement | null>(null);
+
+		// Обробник подій resize
+		useEffect(() => {
 			setContainerSize({
 				width: refContainer.current?.clientWidth || 0,
 				height: refContainer.current?.clientHeight || 0,
 			});
-		};
+			const handleResize = () => {
+				setContainerSize({
+					width: refContainer.current?.clientWidth || 0,
+					height: refContainer.current?.clientHeight || 0,
+				});
+			};
 
-		window.addEventListener('resize', handleResize);
+			window.addEventListener('resize', handleResize);
 
-		// Прибираємо обробник при розмонтуванні компонента
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	}, []);
+			// Прибираємо обробник при розмонтуванні компонента
+			return () => {
+				window.removeEventListener('resize', handleResize);
+			};
+		}, []);
 
-	const placeBlockRandomly = (
-		containerWidth: number,
-		containerHeight: number,
-		block: Block,
-	): Block => {
-		block.x = generateRandomCoordinate(containerWidth, block.width);
-		block.y = generateRandomCoordinate(containerHeight, block.height);
-		return block;
-	};
-
-	const placeBlocks = useCallback(
-		(
+		const placeBlockRandomly = (
 			containerWidth: number,
 			containerHeight: number,
-			blocks: IBuilding[],
-		) => {
-			const placedBlocks: IBuilding[] = [];
+			block: Block,
+		): Block => {
+			block.x = generateRandomCoordinate(containerWidth, block.width);
+			block.y = generateRandomCoordinate(containerHeight, block.height);
+			return block;
+		};
 
-			for (let i = 0; i < blocks.length; i++) {
-				const block = blocks[i];
-				let placed = false;
+		const placeBlocks = useCallback(
+			(
+				containerWidth: number,
+				containerHeight: number,
+				blocks: IBuilding[],
+			) => {
+				const placedBlocks: IBuilding[] = [];
 
-				while (!placed) {
-					placeBlockRandomly(
-						containerWidth,
-						containerHeight,
-						block.size,
-					);
+				for (let i = 0; i < blocks.length; i++) {
+					const block = blocks[i];
+					let placed = false;
 
-					// Перевірити, чи не виходить блок за межі контейнера
-					if (
-						isOutOfBounds(
-							block.size,
+					while (!placed) {
+						placeBlockRandomly(
 							containerWidth,
 							containerHeight,
-						)
-					) {
-						continue;
-					}
+							block.size,
+						);
 
-					// Перевірити, чи не перетинається блок з іншими блоками
-					let overlapping = false;
-					for (let j = 0; j < placedBlocks.length; j++) {
-						if (isOverlapping(block.size, placedBlocks[j].size)) {
-							overlapping = true;
-							break;
+						// Перевірити, чи не виходить блок за межі контейнера
+						if (
+							isOutOfBounds(
+								block.size,
+								containerWidth,
+								containerHeight,
+							)
+						) {
+							continue;
+						}
+
+						// Перевірити, чи не перетинається блок з іншими блоками
+						let overlapping = false;
+						for (let j = 0; j < placedBlocks.length; j++) {
+							if (
+								isOverlapping(block.size, placedBlocks[j].size)
+							) {
+								overlapping = true;
+								break;
+							}
+						}
+
+						// Якщо блок не перетинається і не виходить за межі, розмістити його
+						if (!overlapping) {
+							placedBlocks.push({ ...block });
+							placed = true;
 						}
 					}
-
-					// Якщо блок не перетинається і не виходить за межі, розмістити його
-					if (!overlapping) {
-						placedBlocks.push({ ...block });
-						placed = true;
-					}
 				}
-			}
 
-			setBlocks(placedBlocks);
-		},
-		[setBlocks],
-	);
+				setBlocks(placedBlocks);
+			},
+			[setBlocks],
+		);
 
-	useEffect(() => {
-		if (isInitialized) {
+		useEffect(() => {
 			if (!containerSize) return;
+			if (gameId) {
+				placeBlocks(
+					containerSize.width,
+					containerSize.height,
+					getSettlementInfo().buildings,
+				);
+			}
+		}, [containerSize, placeBlocks, gameId, getSettlementInfo]);
 
-			placeBlocks(
-				containerSize.width,
-				containerSize.height,
-				getSettlementInfo().buildings,
-			);
-		}
-	}, [
-		containerSize,
-		isInitialized,
-		placeBlocks,
-		getSettlementInfo,
-	]);
-
-	return (
-		<Box
-			ref={refContainer}
-			className="settlement__container"
-			sx={{
-				position: 'relative',
-				width: '100%',
-				height: '100%',
-			}}
-		>
-			{blocks.map((block, index) => (
-				<Residential block={block} index={index} key={index} />
-			))}
-		</Box>
-	);
-});
+		return (
+			<Box
+				ref={refContainer}
+				className="settlement__container"
+				sx={{
+					position: 'relative',
+					width: '100%',
+					height: '100%',
+				}}
+			>
+				{blocks.map((block, index) => (
+					<Residential block={block} index={index} key={index} />
+				))}
+			</Box>
+		);
+	},
+);
 
 export default SettlementView;

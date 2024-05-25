@@ -5,10 +5,12 @@ import { getRandomInt } from '@/utils/utils.ts';
 import { workerClearInterval, workerSetInterval } from '@/utils/workerTimer.ts';
 
 import gameStore from '@/state/GameStore';
+import { v4 as uuidv4 } from 'uuid';
 /**
  * Represents a game instance.
  */
 export class Game {
+	public readonly gameId: string;
 	private timerInterval: number | null = null; // The timer interval ID for the game loop
 	private timeElapsed: number = 0; // The time that has elapsed in the game (in hours)
 	private readonly hoursInYear: number = 87600; // The number of hours in a year
@@ -18,13 +20,14 @@ export class Game {
 	private timeMultiplier: GameSpeed = 1; // The time speed multiplier (1: normal, 2: x2, 5: x5)
 	private isPaused: boolean = false; // Indicates whether the game is paused or not
 	private allVillagers: Villager[] = []; // An array of all the villagers in the village
-	private newVillage: Settlement | null = null; // The instance of the Settlement class representing the village
+	private settlement: Settlement | null = null; // The instance of the Settlement class representing the village
 	private lastAgeUpdateTime: number = 0; // The time when the age of villagers was last updated
 
 	constructor(timeMultiplier: GameSpeed = 1) {
-		this.newVillage = new Settlement();
-		this.newVillage.createVillage(getRandomInt(4, 7));
-		this.allVillagers = this.newVillage.getVillagers();
+		this.gameId = uuidv4();
+		this.settlement = new Settlement();
+		this.settlement.createVillage(getRandomInt(4, 7));
+		this.allVillagers = this.settlement.getVillagers();
 		this.timeMultiplier = timeMultiplier;
 
 		this.startGame();
@@ -48,7 +51,7 @@ export class Game {
 		this.timeElapsed = 0;
 		this.isPaused = false;
 		this.allVillagers = [];
-		this.newVillage = null;
+		this.settlement = null;
 		this.lastAgeUpdateTime = 0;
 
 		// Clear store
@@ -59,6 +62,8 @@ export class Game {
 	 * Executes the game loop, updating the game state with the passage of time.
 	 */
 	private gameLoop() {
+		if (this.timeMultiplier === 0) return;
+
 		this.timeElapsed += 0.1 * this.timeMultiplier; // Update game time (0.1 if 100ms interval)
 
 		const yearsElapsed = Math.floor(this.timeElapsed / this.hoursInYear);
@@ -71,7 +76,6 @@ export class Game {
 
 		if (!this.isPaused) {
 			this.getCurrentGameDate(); // Update the game date
-
 		}
 	}
 
