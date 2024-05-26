@@ -150,6 +150,15 @@ export class Commercial extends Building {
 	}) {
 		super({ capacity, type });
 	}
+
+	protected generateRandomSize(): void {
+		this.size = {
+			width: getRandomInt(30, 80),
+			height: getRandomInt(30, 80),
+			x: 0,
+			y: 0,
+		};
+	}
 }
 
 export class Industrial extends Building {
@@ -162,5 +171,13 @@ export class Industrial extends Building {
 		type?: HouseType;
 	}) {
 		super({ capacity, type });
+	}
+	protected generateRandomSize(): void {
+		this.size = {
+			width: getRandomInt(70, 150),
+			height: getRandomInt(70, 150),
+			x: 0,
+			y: 0,
+		};
 	}
 }

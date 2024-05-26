@@ -32,8 +32,6 @@ export class Game {
 
 		this.startGame();
 		gameStore.isInitialized = true;
-
-		console.log(`Start Game ${this.gameId}`);
 	}
 	/**
 	 * Starts the game by initializing the game loop.
@@ -103,7 +101,6 @@ export class Game {
 			this.isPaused = true;
 
 			gameStore.isPaused = true;
-			console.log('pauseGame');
 		}
 	}
 
@@ -116,7 +113,6 @@ export class Game {
 			this.isPaused = false;
 
 			gameStore.isPaused = false;
-			console.log(`resumeGame, gameSpeed: ${this.timeMultiplier}`);
 		}
 	}
 

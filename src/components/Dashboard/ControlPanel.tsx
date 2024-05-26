@@ -28,6 +28,7 @@ const ControlPanel: React.FC = observer(() => {
 		_event: React.MouseEvent<HTMLElement>,
 		multiplier: GameSpeed,
 	) => {
+		if (multiplier === null) return;
 		updateGameSpeed(multiplier);
 	};
 

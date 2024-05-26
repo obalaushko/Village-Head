@@ -14,7 +14,7 @@ class GameStore {
 		month: 0,
 		year: 0,
 	};
-	showLogs: boolean = false;
+	showLogs: boolean = true;
 	isInitialized: boolean = false;
 	isPaused: boolean = false;
 	timeMultiplier: GameSpeed = 1;
@@ -49,7 +49,10 @@ class GameStore {
 		this.curreentGameTime = gameTime;
 	}
 
-	toggleLogs = () => {
+	/**
+	 * Toggles the value of `showLogs` property.
+	 */
+	public toggleLogs = () => {
 		this.showLogs = !this.showLogs;
 	};
 
@@ -95,10 +98,34 @@ class GameStore {
 
 const gameStore = new GameStore();
 
+// autorun(() => {
+// 	if (gameStore.showLogs) {
+// 		const {
+// 			curreentGameTime: { year, month, day },
+// 		} = gameStore;
+// 		console.log('Game time:', `${year} year, ${month} month, ${day} day`);
+// 	}
+// });
+
 autorun(() => {
 	if (gameStore.showLogs) {
-		const { year, month, day } = gameStore.curreentGameTime;
-		console.log('Game time:', `${year} year, ${month} month, ${day} day`);
+		const { timeMultiplier } = gameStore;
+		console.log('Game speed', timeMultiplier);
+	}
+});
+
+autorun(() => {
+	if (gameStore.showLogs) {
+		const { isPaused } = gameStore;
+		console.log('isPaused:', isPaused);
+	}
+});
+autorun(() => {
+	const { isInitialized, showLogs, getGameId } = gameStore;
+	if (showLogs) {
+		if (isInitialized) {
+			console.log('Start new game:', getGameId);
+		}
 	}
 });
 

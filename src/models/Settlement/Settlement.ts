@@ -2,7 +2,7 @@ import { IPerson, createPersonType, sexType } from '@/types/Person.type.ts';
 import { Villager } from '../Characters/Villager.ts';
 import villagersData from '@/mock/villagers.json';
 import { getRandomInt, isResidential } from '@/utils/utils.ts';
-import { Residential } from '../Buildings/Building.ts';
+import { Commercial, Industrial, Residential } from '../Buildings/Building.ts';
 import { BuildingsType, IBuilding } from '@/types/Building.type.ts';
 import gameStore from '@/state/GameStore.ts';
 import { ISettlement } from '@/types/Game.type.ts';
@@ -16,10 +16,10 @@ export class Settlement implements ISettlement {
 
 	/**
 	 * Creates a village by creating houses, villagers, and assigning villagers to houses.
-	 * @param numberOfHouses - The number of houses to create.
+	 * @param numberOfBuilding - The number of houses to create.
 	 */
-	public createVillage(numberOfHouses: number) {
-		this.createHouses(numberOfHouses);
+	public createVillage(numberOfBuilding: number) {
+		this.createHouses(numberOfBuilding);
 		this.createVillagers();
 		this.assignVillagersToHouses();
 
@@ -31,15 +31,47 @@ export class Settlement implements ISettlement {
 
 	/**
 	 * Creates the specified number of houses and adds them to the settlement.
-	 * @param numberOfHouses - The number of houses to create.
+	 * @param numberOfBuilding - The number of houses to create.
 	 */
-	private createHouses(numberOfHouses: number) {
-		for (let i = 0; i < numberOfHouses; i++) {
+	private createHouses(numberOfBuilding: number) {
+		// Пропорції для кожного типу будинків
+		const residentialRatio = 0.6;
+		const commercialRatio = 0.3;
+		// const industrialRatio = 0.1;
+
+		// Розрахунок кількості будинків кожного типу
+		const residentialCount = Math.floor(
+			numberOfBuilding * residentialRatio,
+		);
+		const commercialCount = Math.floor(numberOfBuilding * commercialRatio);
+		const industrialCount =
+			numberOfBuilding - residentialCount - commercialCount;
+
+		// Створення житлових будинків
+		for (let i = 0; i < residentialCount; i++) {
 			const house = new Residential({
 				id: `residential-${i + 1}`,
 				capacity: getRandomInt(2, 5),
 			});
 			this.buildings.push(house);
+		}
+
+		// Створення комерційних будинків
+		for (let i = 0; i < commercialCount; i++) {
+			const commercialBuilding = new Commercial({
+				id: `commercial-${i + 1}`,
+				capacity: getRandomInt(1, 3),
+			});
+			this.buildings.push(commercialBuilding);
+		}
+
+		// Створення індустріальних будинків
+		for (let i = 0; i < industrialCount; i++) {
+			const industrialBuilding = new Industrial({
+				id: `industrial-${i + 1}`,
+				capacity: getRandomInt(1, 2),
+			});
+			this.buildings.push(industrialBuilding);
 		}
 	}
 
@@ -62,6 +94,7 @@ export class Settlement implements ISettlement {
 	private assignVillagersToHouses() {
 		let villagerIndex = 0;
 		for (const house of this.buildings) {
+			if (!isResidential(house)) return; // Assign only to residential buildings
 			// const { capacity, residents } = house.getHouseInfo();
 			while (
 				house.residents.length < house.capacity &&

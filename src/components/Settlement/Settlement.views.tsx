@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import Residential from '../Building/Residential.tsx';
+import BuildingBlock from '../Building/BuildingBlock.tsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Block, IBuilding } from '@/types/Building.type.ts';
 import { observer } from 'mobx-react-lite';
@@ -134,7 +134,7 @@ const SettlementView: React.FC<SettlementViewProps> = observer(
 				}}
 			>
 				{blocks.map((block, index) => (
-					<Residential block={block} index={index} key={index} />
+					<BuildingBlock block={block} index={index} key={index} />
 				))}
 			</Box>
 		);
