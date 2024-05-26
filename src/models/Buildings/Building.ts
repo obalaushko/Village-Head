@@ -153,8 +153,8 @@ export class Commercial extends Building {
 
 	protected generateRandomSize(): void {
 		this.size = {
-			width: getRandomInt(30, 80),
-			height: getRandomInt(30, 80),
+			width: getRandomInt(40, 80),
+			height: getRandomInt(40, 80),
 			x: 0,
 			y: 0,
 		};
@@ -174,8 +174,8 @@ export class Industrial extends Building {
 	}
 	protected generateRandomSize(): void {
 		this.size = {
-			width: getRandomInt(70, 150),
-			height: getRandomInt(70, 150),
+			width: getRandomInt(70, 120),
+			height: getRandomInt(70, 120),
 			x: 0,
 			y: 0,
 		};

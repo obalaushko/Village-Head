@@ -26,7 +26,7 @@ export class Game {
 	constructor(timeMultiplier: GameSpeed = 1) {
 		this.gameId = uuidv4();
 		this.settlement = new Settlement();
-		this.settlement.createVillage(getRandomInt(5, 12));
+		this.settlement.createVillage(getRandomInt(10, 20));
 		this.allVillagers = this.settlement.getVillagers();
 		this.timeMultiplier = timeMultiplier;
 
